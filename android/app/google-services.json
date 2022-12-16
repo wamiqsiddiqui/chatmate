@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "288213112157",
+    "project_id": "chat-mate-910fb",
+    "storage_bucket": "chat-mate-910fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288213112157:android:75175fa0cb613b3f2e44b4",
+        "android_client_info": {
+          "package_name": "com.wamiq.chatmate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "288213112157-nklm12j5dfrt5r6qllme0cbk8kf687ul.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wamiq.chatmate",
+            "certificate_hash": "2d1a180a74212220cec208b82249712e4ff8b1bb"
+          }
+        },
+        {
+          "client_id": "288213112157-9aukgv4cv41jbt2vl6l36s8dqmlpaudo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-3n-ygCzL3nu1QvvGXTy38kwpCxUe5CY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "288213112157-9aukgv4cv41jbt2vl6l36s8dqmlpaudo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
