@@ -23,8 +23,6 @@ class _SignInState extends State<SignIn> {
     });
   }
   Future signIn() async {
-    //FirebaseUser user;
-    //AuthResult result;
     final formState = _formKey.currentState;
     var results=await Connectivity().checkConnectivity();
    
