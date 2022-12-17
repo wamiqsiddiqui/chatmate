@@ -1,3 +1,4 @@
+import 'package:chatmate/Views/Search.dart';
 import 'package:chatmate/Views/SplashScreen.dart';
 import 'package:chatmate/themes/AppTheme.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,10 +16,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme:  AppTheme().loadTheme(true),
+      initialRoute: '/',
+      routes: {
+        '/search': (context) => Search(
+              searchResult: [],
+            )
+      },
+      theme: AppTheme().loadTheme(true),
+      darkTheme: AppTheme().loadTheme(true),
       home: SplashScreen(),
     );
   }
 }
-
