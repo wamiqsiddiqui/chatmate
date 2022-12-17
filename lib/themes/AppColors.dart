@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
 
-class AppColors{
+class AppColors {
   static const white = Colors.white;
   static const black = Colors.black;
   static const primaryColor = Color(0xFF8C1749);
@@ -15,28 +14,28 @@ class AppColors{
   static const backgroundColor = Color(0xFFFFFFFF);
   static const scaffoldBackgroundColor = Color(0xFFF6F6F9);
   static const transparent = Colors.transparent;
-  static const MaterialColor customPrimary = MaterialColor(0xFF717ECD, <int, Color>
-  {
-    50: Color.fromRGBO(78,177,203,.1),
-    100: Color.fromRGBO(78,177,203,.2),
-    200: Color.fromRGBO(78,177,203,.3),
-    300: Color.fromRGBO(78,177,203,.4),
-    400: Color.fromRGBO(78,177,203,.5),
-    500: Color.fromRGBO(78,177,203,.6),
-    600: Color.fromRGBO(78,177,203,.7),
-    700: Color.fromRGBO(78,177,203,.8),
-    800: Color.fromRGBO(78,177,203,.9),
-    900: Color.fromRGBO(78,177,203,1),
+  static const MaterialColor customPrimary =
+      MaterialColor(0xFF4EB1CB, <int, Color>{
+    50: Color.fromRGBO(78, 177, 203, .1),
+    100: Color.fromRGBO(78, 177, 203, .2),
+    200: Color.fromRGBO(78, 177, 203, .3),
+    300: Color.fromRGBO(78, 177, 203, .4),
+    400: Color.fromRGBO(78, 177, 203, .5),
+    500: Color.fromRGBO(78, 177, 203, .6),
+    600: Color.fromRGBO(78, 177, 203, .7),
+    700: Color.fromRGBO(78, 177, 203, .8),
+    800: Color.fromRGBO(78, 177, 203, .9),
+    900: Color.fromRGBO(78, 177, 203, 1),
   });
 }
-class ThemeColors{
+
+class ThemeColors {
   static const white = Colors.white;
   static const black = Colors.black;
-  static const senderColor = Color(0xFF4EB1CB);
+  static const primaryColor = Color(0xFF4EB1CB);
   static const secondaryColor = Color(0xFFCF5C60);
-  static const primaryColor = Color(0xFF717ECD);
+  static const senderColor = Color(0xFF717ECD);
   static const receiverColor2 = Color(0xFF4AB471);
   static const receiverColor = Color(0xFFF3AE4E);
   static const senderColor2 = Color(0xFFD96383);
-
 }
