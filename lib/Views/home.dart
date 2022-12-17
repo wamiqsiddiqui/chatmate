@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:chatmate/Views/Search.dart';
 import 'package:flutter/src/scheduler/ticker.dart';
 
-class ChatRoom extends StatefulWidget {
+class Home extends StatefulWidget {
   @override
-  _ChatRoomState createState() => _ChatRoomState();
+  _HomeState createState() => _HomeState();
 }
 
-class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
+class _HomeState extends State<Home> with TickerProviderStateMixin {
   bool searchPressed = false, searching = false;
   int selectedTab = 1;
   late TabController tabBarCtrl;
