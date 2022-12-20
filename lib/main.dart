@@ -1,5 +1,7 @@
+import 'package:chatmate/Views/ChatRoom.dart';
 import 'package:chatmate/Views/Search.dart';
 import 'package:chatmate/Views/SplashScreen.dart';
+import 'package:chatmate/router/router.dart';
 import 'package:chatmate/themes/AppTheme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -18,13 +20,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      initialRoute: '/',
-      routes: {
-        '/search': (context) => Search(
-              searchResult: [],
-            )
-      },
       theme: AppTheme().loadTheme(true),
+      onGenerateRoute: MainRouter.generateRoute,
       darkTheme: AppTheme().loadTheme(true),
       home: SplashScreen(),
     );
