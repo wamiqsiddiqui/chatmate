@@ -1,3 +1,4 @@
+import 'package:chatmate/Model/Message.dart';
 import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Utilities/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,10 +6,32 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseServices {
-  static User? getCurrentUser() {
-    final FirebaseAuth? _auth = FirebaseAuth.instance;
-    // User? currentUser = _auth?.currentUser;
-    return _auth?.currentUser;
+  static User? currentUser;
+  static final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  static bool getCurrentUser() {
+    try {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      currentUser = _auth.currentUser!;
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static sendMessage(String message, String receiverId) async {
+    await firestore
+        .collection('messages')
+        .doc(currentUser!.uid)
+        .collection(receiverId)
+        .doc()
+        .set(Message(
+                id: currentUser!.uid + receiverId,
+                receiverId: receiverId,
+                senderId: currentUser!.uid,
+                text: message,
+                type: 'text',
+                timestamp: Timestamp.now())
+            .toMap());
   }
 
   static Future<User?> signInWithGoogle() async {

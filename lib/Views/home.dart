@@ -54,18 +54,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     super.initState();
     tabBarCtrl = TabController(length: 4, vsync: this);
     print('getting user');
-    User? currentUser = FirebaseServices.getCurrentUser();
-    if (currentUser != null) {
-      print('currentUser = ${currentUser.displayName}');
-      FirebaseServices.fetchAllUsers(currentUser).then((List<CAUser> users) {
-        setState(() {
-          userList = users;
-          searchResult = users;
-        });
+    FirebaseServices.fetchAllUsers(FirebaseServices.currentUser!)
+        .then((List<CAUser> users) {
+      setState(() {
+        userList = users;
+        searchResult = users;
       });
-    } else {
-      print('no user');
-    }
+    });
   }
 
   @override
@@ -73,7 +68,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     return SafeArea(
       child: DefaultTabController(
           length: 4,
-          initialIndex: 1,
+          initialIndex: 2,
           child: Scaffold(
             backgroundColor: ThemeColors.primaryColor,
             bottomNavigationBar: TabBar(

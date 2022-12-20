@@ -13,7 +13,7 @@ class UserCircle extends StatelessWidget {
         FirebaseServices.signOut();
       },
       child: CircleAvatar(
-        radius: 24,
+        // radius: 24,
         backgroundColor: ThemeColors.receiverColor,
         child: Stack(
           children: [
