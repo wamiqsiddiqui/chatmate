@@ -4,6 +4,7 @@ import 'package:chatmate/Views/ChatsList.dart';
 import 'package:chatmate/Widgets/UserCircle.dart';
 import 'package:chatmate/themes/AppColors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:chatmate/Views/Search.dart';
 import 'package:flutter/src/scheduler/ticker.dart';
@@ -53,6 +54,35 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     tabBarCtrl = TabController(length: 4, vsync: this);
+
+    // 1. This method call when app in terminated state and you get a notification
+    // when you click on notification app open from terminated state and you can get notification data in this method
+
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      //When app is in termination state and notification comes, and user clicks on that, then this
+      // method is called waking app from termination state
+      if (message != null) {
+        print('NEw Notification');
+      }
+    });
+
+    FirebaseMessaging.onMessage.listen((message) {
+      print('FirebaseMEssaging.onMessage.listen');
+      if (message.notification != null) {
+        print('message.notification!.title = ${message.notification!.title}');
+        print('message.notification!.body = ${message.notification!.body}');
+        print('message.data = ${message.data}');
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print('FirebaseMessaging.onMessageOpenedApp.listen');
+      if (message.notification != null) {
+        print('message.notification!.title = ${message.notification!.title}');
+        print('message.notification!.body = ${message.notification!.body}');
+        print("message.data = ${message.data['_id']}");
+      }
+    });
     print('getting user');
     FirebaseServices.fetchAllUsers(FirebaseServices.currentUser!)
         .then((List<CAUser> users) {
@@ -70,38 +100,70 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           length: 4,
           initialIndex: 2,
           child: Scaffold(
-            backgroundColor: ThemeColors.primaryColor,
-            bottomNavigationBar: TabBar(
-                controller: tabBarCtrl,
-                indicatorColor: ThemeColors.receiverColor,
-                indicatorWeight: 4,
-                indicatorPadding: EdgeInsets.symmetric(vertical: 4),
-                labelPadding: EdgeInsets.symmetric(horizontal: 28, vertical: 4),
-                onTap: onTabChange,
-                tabs: tabs),
-            appBar: !searchPressed
-                ? AppBar(
-                    elevation: 0,
-                    centerTitle: true,
-                    title: UserCircle(),
-                    actions: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: IconButton(
-                          icon: Icon(Icons.search),
-                          color: AppColors.white,
-                          onPressed: () {
-                            searchOnPressed();
-                            //Navigator.pushNamed(context, '/search');
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(Icons.more_vert, color: AppColors.white),
-                      )
+            // backgroundColor: ThemeColors.primaryColor,
+            bottomNavigationBar: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [
+                      Colors.blue,
+                      ThemeColors.primaryColor,
                     ],
-                    // bottom:
+                  ),
+                ),
+                child: TabBar(
+                    controller: tabBarCtrl,
+                    indicatorColor: ThemeColors.receiverColor,
+                    indicatorWeight: 4,
+                    indicatorPadding: EdgeInsets.symmetric(vertical: 4),
+                    labelPadding:
+                        EdgeInsets.symmetric(horizontal: 28, vertical: 4),
+                    onTap: onTabChange,
+                    tabs: tabs)),
+            appBar: !searchPressed
+                ? PreferredSize(
+                    preferredSize: Size(double.infinity, kToolbarHeight + 8),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: ThemeColors.primaryColor,
+                          gradient: LinearGradient(
+                            begin: Alignment.topRight,
+                            end: Alignment.bottomLeft,
+                            colors: [
+                              ThemeColors.primaryColor,
+                              Colors.blue.shade600,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(0),
+                              bottomRight: Radius.circular(0))),
+                      child: AppBar(
+                        elevation: 0,
+                        centerTitle: true,
+                        backgroundColor: AppColors.transparent,
+                        title: UserCircle(),
+                        actions: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: IconButton(
+                              icon: Icon(Icons.search),
+                              color: AppColors.white,
+                              onPressed: () {
+                                searchOnPressed();
+                                //Navigator.pushNamed(context, '/search');
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child:
+                                Icon(Icons.more_vert, color: AppColors.white),
+                          )
+                        ],
+                        // bottom:
+                      ),
+                    ),
                   )
                 : AppBar(
                     leading: IconButton(

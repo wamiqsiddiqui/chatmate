@@ -15,7 +15,7 @@ class AppColors {
   static const scaffoldBackgroundColor = Color(0xFFF6F6F9);
   static const transparent = Colors.transparent;
   static const MaterialColor customPrimary =
-      MaterialColor(0xFF4EB1CB, <int, Color>{
+      MaterialColor(0xFFBF6C85, <int, Color>{
     50: Color.fromRGBO(78, 177, 203, .1),
     100: Color.fromRGBO(78, 177, 203, .2),
     200: Color.fromRGBO(78, 177, 203, .3),
@@ -32,10 +32,12 @@ class AppColors {
 class ThemeColors {
   static const white = Colors.white;
   static const black = Colors.black;
-  static const primaryColor = Color(0xFF4EB1CB);
+  static const primaryColor = Color(0xFFBF6C85); //#E84E4E
   static const secondaryColor = Color(0xFFCF5C60);
-  static const senderColor = Color(0xFF717ECD);
+  static const senderColor = Color(0xFF5281CE); //#FF5A3C
   static const receiverColor2 = Color(0xFF4AB471);
-  static const receiverColor = Color(0xFFF3AE4E);
+  static const receiverColor = Color(0xFF7FC7DB);
   static const senderColor2 = Color(0xFFD96383);
+  static const gradient1 = Color(0xFFAE4FF3);
+  static const gradient2 = Color(0xFFD568F5);
 }

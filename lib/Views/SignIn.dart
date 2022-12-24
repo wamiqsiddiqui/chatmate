@@ -52,6 +52,7 @@ class _SignInState extends State<SignIn> {
         User? user = await FirebaseServices.signInWithGoogle();
         print('after');
         if (user != null) {
+          FirebaseServices.currentUser = user;
           bool isNewUser = await FirebaseServices.authenticateUser(user);
           print('lll');
           if (isNewUser) {

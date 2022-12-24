@@ -18,11 +18,39 @@ class FirebaseServices {
     }
   }
 
-  static sendMessage(String message, String receiverId) async {
+  static Stream<QuerySnapshot> receiveMessage(
+
+      /// When receive api is called, the message is delivered
+      String receiverId,
+      String receiverName) {
+    print('listening');
+    return firestore
+        .collection('messages')
+        .doc(currentUser!.displayName! + currentUser!.uid)
+        .collection(receiverName + receiverId)
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+  }
+
+  static sendMessage(
+      String message, String receiverId, String receiverName) async {
     await firestore
         .collection('messages')
-        .doc(currentUser!.uid)
-        .collection(receiverId)
+        .doc(currentUser!.displayName! + currentUser!.uid)
+        .collection(receiverName + receiverId)
+        .doc()
+        .set(Message(
+                id: currentUser!.uid + receiverId,
+                receiverId: receiverId,
+                senderId: currentUser!.uid,
+                text: message,
+                type: 'text',
+                timestamp: Timestamp.now())
+            .toMap());
+    await firestore
+        .collection('messages')
+        .doc(receiverName + receiverId)
+        .collection(currentUser!.displayName! + currentUser!.uid)
         .doc()
         .set(Message(
                 id: currentUser!.uid + receiverId,
@@ -76,6 +104,7 @@ class FirebaseServices {
   }
 
   static Future<void> signOut() async {
+    currentUser = null;
     GoogleSignIn googleSignIn = GoogleSignIn();
     await googleSignIn.disconnect();
     await googleSignIn.signOut();
@@ -87,9 +116,9 @@ class FirebaseServices {
     List<CAUser> userList = [];
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('users').get();
-    for (QueryDocumentSnapshot x in querySnapshot.docs) {
+    for (DocumentSnapshot x in querySnapshot.docs) {
       if (x.id != currentUser.uid) {
-        userList.add(CAUser.fromJson(x.data()));
+        userList.add(CAUser.fromJson(x));
       }
     }
     return userList;
