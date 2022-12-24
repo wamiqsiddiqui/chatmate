@@ -1,17 +1,32 @@
 import 'package:chatmate/Model/Message.dart';
 import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Utilities/utils.dart';
+import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:path_provider/path_provider.dart';
 
 class FirebaseServices {
   static User? currentUser;
   static final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  static bool getCurrentUser() {
+  static Future<bool> getCurrentUser() async {
     try {
       final FirebaseAuth _auth = FirebaseAuth.instance;
       currentUser = _auth.currentUser!;
+      DocumentSnapshot doc =
+          await firestore.collection('users').doc(currentUser!.uid).get();
+      CAUser fieldValue = CAUser.fromJson(doc);
+      print('whatt');
+      print('field = ${fieldValue.fcmToken}');
+      Box box = Hive.box('tokenBox');
+
+      if (fieldValue.fcmToken != box.get('fcmToken')!) {
+        print("Logged in else where so loggin out here");
+        signOut(removeFcmToken: false);
+        return false;
+      }
       return true;
     } catch (e) {
       return false;
@@ -87,23 +102,47 @@ class FirebaseServices {
         .where('email', isEqualTo: user.email)
         .get();
     final List<DocumentSnapshot> docs = querySnapshot.docs;
-    return docs.length == 0 ? true : false;
+    if (docs.length == 0) {
+      return true;
+    } else {
+      updateUserToken(
+          token: await LocalNotificationService
+              .getDeviceTokenToSendNotification());
+      return false;
+    }
   }
 
   static addUserToDb(User user) async {
+    String deviceTokenToSendPushNotification =
+        await LocalNotificationService.getDeviceTokenToSendNotification();
+    final appDir = await getApplicationDocumentsDirectory();
+    await Hive.initFlutter('${appDir.path}/cache');
+    Box box = await Hive.openBox('tokenBox');
+
+    box.put('fcmToken', deviceTokenToSendPushNotification);
+
     CAUser caUser = CAUser(
         uid: user.uid,
         name: user.displayName!,
         email: user.email!,
         profilePhoto: user.photoURL,
-        username: Utils.getUsername(user.email!));
+        username: Utils.getUsername(user.email!),
+        fcmToken: deviceTokenToSendPushNotification);
     FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
         .set(caUser.toMap());
   }
 
-  static Future<void> signOut() async {
+  static updateUserToken({token = ''}) {
+    firestore
+        .collection('users')
+        .doc(currentUser!.uid)
+        .update({'fcmToken': token});
+  }
+
+  static Future<void> signOut({bool removeFcmToken = true}) async {
+    if (removeFcmToken) updateUserToken();
     currentUser = null;
     GoogleSignIn googleSignIn = GoogleSignIn();
     await googleSignIn.disconnect();

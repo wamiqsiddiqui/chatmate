@@ -2,6 +2,7 @@ import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
 import 'package:chatmate/Views/ChatsList.dart';
 import 'package:chatmate/Widgets/UserCircle.dart';
+import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:chatmate/themes/AppColors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -72,6 +73,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         print('message.notification!.title = ${message.notification!.title}');
         print('message.notification!.body = ${message.notification!.body}');
         print('message.data = ${message.data}');
+        LocalNotificationService.createAndDisplayNotificationChannel(message);
       }
     });
 

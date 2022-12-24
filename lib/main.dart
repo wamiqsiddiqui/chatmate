@@ -1,6 +1,7 @@
 import 'package:chatmate/Views/ChatRoom.dart';
 import 'package:chatmate/Views/Search.dart';
 import 'package:chatmate/Views/SplashScreen.dart';
+import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:chatmate/router/router.dart';
 import 'package:chatmate/themes/AppTheme.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,6 +17,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   FirebaseApp firebaseApp = await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  LocalNotificationService.initialize();
   print('firebase app = ${firebaseApp.name} ${firebaseApp.options.projectId}');
   runApp(MyApp());
 }

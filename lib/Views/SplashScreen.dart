@@ -12,19 +12,27 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Timer(Duration(seconds: 3), () async {
+      bool isLoggedIn = await FirebaseServices.getCurrentUser();
+      if (isLoggedIn) {
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+          return Home();
+        }));
+      } else {
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+          return SignIn();
+        }));
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Timer(
-        Duration(seconds: 3),
-        () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (BuildContext context) {
-              if (FirebaseServices.getCurrentUser()) {
-                print('already logged in');
-                return Home();
-              } else {
-                print('not logged in already');
-                return SignIn();
-              }
-            })));
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
