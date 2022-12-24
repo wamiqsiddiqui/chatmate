@@ -1,4 +1,5 @@
 import 'package:chatmate/Widgets/UserCircle.dart';
+import 'package:chatmate/themes/AppColors.dart';
 import 'package:flutter/material.dart';
 
 class ChatTile extends StatefulWidget {
@@ -12,11 +13,41 @@ class _ChatTileState extends State<ChatTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 12, right: 4, top: 8, bottom: 8),
+      margin: EdgeInsets.only(left: 0, right: 0, top: 8, bottom: 8),
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+          color: ThemeColors.white,
+          boxShadow: [
+            BoxShadow(
+                blurRadius: 0.4, offset: Offset(1, 2), color: AppColors.bgGrey)
+          ],
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              ThemeColors.receiverColor,
+              ThemeColors.receiverColor.withOpacity(0.2),
+            ],
+          )
+          // borderRadius: BorderRadius.only(
+          //   bottomLeft: Radius.circular(32),
+          //   bottomRight: Radius.circular(32),
+          //   // topLeft: Radius.circular(12),
+          //   // topRight: Radius.circular(12),
+          // )
+          ),
       child: Row(
         children: [
           Flexible(
             child: UserCircle(),
+          ),
+          Container(
+            height: 32,
+            width: 32,
+            decoration: BoxDecoration(
+              color: ThemeColors.primaryColor,
+                borderRadius:
+                    BorderRadius.only(bottomLeft: Radius.circular(82))),
           ),
           Expanded(
             flex: 8,
@@ -29,7 +60,7 @@ class _ChatTileState extends State<ChatTile> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Brooo',
+                        'Wamiq',
                         style: Theme.of(context).textTheme.headline5,
                       ),
                       Text(
@@ -39,7 +70,7 @@ class _ChatTileState extends State<ChatTile> {
                     ],
                   ),
                   Text(
-                    'Ajeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebbb Wamiqqqqq kyaa maslaa haaaiii dimaghh kharabbbb !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',
+                    'Long text',
                     style: Theme.of(context).textTheme.bodyText1,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -49,6 +80,7 @@ class _ChatTileState extends State<ChatTile> {
               ),
             ),
           ),
+          
         ],
       ),
     );

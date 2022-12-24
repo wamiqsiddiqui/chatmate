@@ -35,7 +35,7 @@ class CAUser{
   String? profilePhoto;
 
   CAUser({required this.uid, required this.name,required this.email, this.profilePhoto, this.state, this.status, required this.username});
-   factory CAUser.fromJson(Map<String,dynamic> json)=>CAUser(
+   factory CAUser.fromJson(DocumentSnapshot json)=>CAUser(
     uid:json['uid'],
     name:json['name'],
     email: json['email'],

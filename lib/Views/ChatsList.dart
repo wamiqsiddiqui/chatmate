@@ -15,11 +15,12 @@ class _ChatsListState extends State<ChatsList> {
     return Container(
       margin: EdgeInsets.only(top: 8),
       decoration: BoxDecoration(
-          color: ThemeColors.white,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(32), topRight: Radius.circular(32))),
+        color: ThemeColors.white,
+        // borderRadius: BorderRadius.only(
+        //     topLeft: Radius.circular(32), topRight: Radius.circular(32))
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
         child: ListView.separated(
           itemCount: 16,
           itemBuilder: (context, index) => ChatTile(),

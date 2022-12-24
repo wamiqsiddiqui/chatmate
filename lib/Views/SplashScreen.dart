@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Duration(seconds: 3),
         () => Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (BuildContext context) {
-              if (FirebaseServices.getCurrentUser() != null) {
+              if (FirebaseServices.getCurrentUser()) {
                 print('already logged in');
                 return Home();
               } else {

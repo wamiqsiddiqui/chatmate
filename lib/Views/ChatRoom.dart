@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
 import 'package:chatmate/Widgets/UserCircle.dart';
 import 'package:chatmate/themes/AppColors.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:intl/intl.dart';
 
 class ChatRoom extends StatefulWidget {
   CAUser receiver;
@@ -18,82 +22,123 @@ class _ChatRoomState extends State<ChatRoom> {
   TextEditingController sendTextCtrl = TextEditingController();
   ScrollController chatScrollCtrl = ScrollController();
   List<bool> chats = [true, false, true, false, false, false, true];
-  Widget receiverChat() {
+  Widget receiverChat(DocumentSnapshot snapshot) {
     return UnconstrainedBox(
       alignment: Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.only(top: 20, bottom: 16, left: 12),
-        constraints:
-            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
-        decoration: BoxDecoration(
-            color: ThemeColors.receiverColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-              bottomRight: Radius.circular(16),
-            )),
-        child: Padding(
-          padding: EdgeInsets.all(12),
-          child: Text(
-            'Hello World Wamiqq Hello World Wamiqq Hello World Wamiqq Hello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World Wamiqq',
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              color: AppColors.white,
-              fontSize: 16,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 20, bottom: 4, left: 12),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.65),
+            decoration: BoxDecoration(
+                color: ThemeColors.receiverColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                )),
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: Text(
+                snapshot['text'],
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  color: AppColors.white,
+                  fontSize: 16,
+                ),
+              ),
             ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.only(left: 12.0),
+            child: Container(
+              margin: EdgeInsets.only(bottom: 16),
+              width: MediaQuery.of(context).size.width * 0.4,
+              child: Text(
+                DateFormat('hh:mm a')
+                    .format(snapshot['timestamp'].toDate())
+                    .toString(),
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget senderChat() {
+  Widget senderChat(DocumentSnapshot snapshot, bool hasPendingWrites) {
     return UnconstrainedBox(
       alignment: Alignment.centerRight,
-      child: Container(
-        margin: EdgeInsets.only(top: 20, bottom: 16, right: 12),
-        constraints:
-            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
-        decoration: BoxDecoration(
-            color: ThemeColors.senderColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-              bottomLeft: Radius.circular(16),
-            )),
-        child: Padding(
-          padding: EdgeInsets.all(12),
-          child: Text(
-            'Hello World Wamiqq Hello World Wamiqq Hello World Wamiqq Hello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World WamiqqHello World Wamiqq',
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              color: AppColors.white,
-              fontSize: 16,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 20, bottom: 4, right: 12),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.65),
+            decoration: BoxDecoration(
+                color: ThemeColors.senderColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                  bottomLeft: Radius.circular(16),
+                )),
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: Text(
+                snapshot['text'] + 'hasPendingWrites = $hasPendingWrites',
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  color: AppColors.white,
+                  fontSize: 16,
+                ),
+              ),
             ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: Container(
+              margin: EdgeInsets.only(bottom: 16),
+              width: MediaQuery.of(context).size.width * 0.4,
+              child: Text(
+                DateFormat('hh:mm a')
+                    .format(snapshot['timestamp'].toDate())
+                    .toString(),
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   sendMessage(String text) async {
-    await FirebaseServices.sendMessage(text, widget.receiver.uid);
+    await FirebaseServices.sendMessage(
+        text, widget.receiver.uid, widget.receiver.name);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (chatScrollCtrl.hasClients) {
-      print('what');
-      chatScrollCtrl.jumpTo(chatScrollCtrl.position.maxScrollExtent);
-    }
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
+        // centerTitle: true,
         title: Row(
           children: [
-            UserCircle(),
+            // UserCircle(),
             SizedBox(width: 8),
-            Text('Brooo'),
+            Text(widget.receiver.name),
           ],
         ),
         actions: [
@@ -125,24 +170,28 @@ class _ChatRoomState extends State<ChatRoom> {
       ),
       body: Column(
         children: [
-          Flexible(
-              child: ListView.builder(
-                  itemCount: 7,
-                  controller: chatScrollCtrl,
-                  reverse: false,
-                  itemBuilder: (context, index) {
-                    if (chatScrollCtrl.hasClients) {
-                      print('what');
-                      SchedulerBinding.instance!
-                          .addPostFrameCallback((timeStamp) {
-                        chatScrollCtrl.animateTo(
-                            chatScrollCtrl.position.maxScrollExtent,
-                            duration: Duration(milliseconds: 100),
-                            curve: Curves.easeIn);
-                      });
-                    }
-                    return chats[index] ? receiverChat() : senderChat();
-                  })),
+          StreamBuilder(
+              stream: FirebaseServices.receiveMessage(
+                  widget.receiver.uid, widget.receiver.name),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                print('rebuild ${snapshot.data!.metadata.hasPendingWrites}');
+                if (snapshot.data == null) {
+                  return Text('Getting messages');
+                }
+                return Flexible(
+                    child: ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        controller: chatScrollCtrl,
+                        reverse: true,
+                        itemBuilder: (context, index) {
+                          return snapshot.data!.docs[index]['senderId'] ==
+                                  FirebaseServices.currentUser!.uid
+                              ? senderChat(snapshot.data!.docs[index],
+                                  snapshot.data!.metadata.hasPendingWrites)
+                              : receiverChat(snapshot.data!.docs[index]);
+                        }));
+              }),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
