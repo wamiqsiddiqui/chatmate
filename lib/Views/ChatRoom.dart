@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:chatmate/Model/Users.dart';
+import 'package:chatmate/Model/call.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
-import 'package:chatmate/Widgets/UserCircle.dart';
+import 'package:chatmate/Utilities/callHelper.dart';
+import 'package:chatmate/router/arguments.dart';
 import 'package:chatmate/themes/AppColors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -22,6 +22,7 @@ class _ChatRoomState extends State<ChatRoom> {
   TextEditingController sendTextCtrl = TextEditingController();
   ScrollController chatScrollCtrl = ScrollController();
   List<bool> chats = [true, false, true, false, false, false, true];
+  String errorMessage = '';
   Widget receiverChat(DocumentSnapshot snapshot) {
     return UnconstrainedBox(
       alignment: Alignment.centerLeft,
@@ -155,8 +156,19 @@ class _ChatRoomState extends State<ChatRoom> {
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
               icon: Icon(Icons.video_call_rounded),
-              onPressed: () {
-                Navigator.pop(context);
+              onPressed: () async {
+                try {
+                  Call call = await CallHelper.dial(
+                      FirebaseServices.currentUser!, widget.receiver, context);
+                  CallScreenArguments arguments =
+                      CallScreenArguments(call: call);
+                  Navigator.pushNamed(context, '/callScreen',
+                      arguments: arguments);
+                  errorMessage = '';
+                } catch (e) {
+                  errorMessage = 'Something went wrong please try again!';
+                  print('Error while getting call object = $e');
+                }
               },
             ),
           ),
