@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Model/call.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
@@ -23,7 +21,6 @@ class ChatRoom extends StatefulWidget {
 class _ChatRoomState extends State<ChatRoom> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     FirebaseMessaging.onMessage.listen((message) {
       print('FirebaseMEssaging.onMessage.listen');

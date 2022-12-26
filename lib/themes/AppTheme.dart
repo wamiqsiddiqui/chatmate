@@ -1,4 +1,3 @@
-import 'package:chatmate/Widgets/Decorations.dart';
 import 'package:chatmate/themes/AppColors.dart';
 import 'package:flutter/material.dart';
 
@@ -22,9 +21,7 @@ class AppTheme {
       hintColor: AppColors.bgGrey.withOpacity(0.8),
       colorScheme: ColorScheme(
           primary: ThemeColors.primaryColor,
-          primaryVariant: ThemeColors.primaryColor,
           secondary: ThemeColors.secondaryColor,
-          secondaryVariant: ThemeColors.secondaryColor,
           background: AppColors.backgroundColor,
           brightness: Brightness.light,
           onBackground: AppColors.black,

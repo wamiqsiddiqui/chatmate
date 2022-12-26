@@ -92,7 +92,7 @@ class _SignUpState extends State<SignUp> {
           });
           //return user;
         } catch (e) {
-          print("This is error: ${e}");
+          print("This is error: $e");
           showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -459,8 +459,6 @@ class _SignUpState extends State<SignUp> {
                     ),*/
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0)),
-                          primary: ThemeColors.secondaryColor,
-                          onPrimary: Colors.pink,
                           minimumSize:
                               Size(MediaQuery.of(context).size.width / 2, 50)),
                       onPressed: () {

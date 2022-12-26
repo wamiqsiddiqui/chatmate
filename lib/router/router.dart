@@ -3,7 +3,6 @@ import 'package:chatmate/Views/Search.dart';
 import 'package:chatmate/Views/calls/callScreen.dart';
 import 'package:chatmate/Views/home.dart';
 import 'package:chatmate/router/arguments.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MainRouter {

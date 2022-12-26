@@ -1,5 +1,4 @@
 import 'package:chatmate/Model/Users.dart';
-import 'package:chatmate/Widgets/ChatTile.dart';
 import 'package:chatmate/Widgets/UserCircle.dart';
 import 'package:chatmate/router/arguments.dart';
 import 'package:chatmate/themes/AppColors.dart';

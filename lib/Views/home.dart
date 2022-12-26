@@ -1,14 +1,13 @@
 import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
 import 'package:chatmate/Views/ChatsList.dart';
+import 'package:chatmate/Views/calls/pickupCalls/pickupLayout.dart';
 import 'package:chatmate/Widgets/UserCircle.dart';
 import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:chatmate/themes/AppColors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:chatmate/Views/Search.dart';
-import 'package:flutter/src/scheduler/ticker.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -100,139 +99,143 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: DefaultTabController(
-          length: 4,
-          initialIndex: 2,
-          child: Scaffold(
-            // backgroundColor: ThemeColors.primaryColor,
-            bottomNavigationBar: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    colors: [
-                      Colors.blue,
-                      ThemeColors.primaryColor,
-                    ],
+      child: PickupLayout(
+        scaffold: DefaultTabController(
+            length: 4,
+            initialIndex: 2,
+            child: Scaffold(
+              // backgroundColor: ThemeColors.primaryColor,
+              bottomNavigationBar: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [
+                        Colors.blue,
+                        ThemeColors.primaryColor,
+                      ],
+                    ),
                   ),
-                ),
-                child: TabBar(
-                    controller: tabBarCtrl,
-                    indicatorColor: ThemeColors.receiverColor,
-                    indicatorWeight: 4,
-                    indicatorPadding: EdgeInsets.symmetric(vertical: 4),
-                    labelPadding:
-                        EdgeInsets.symmetric(horizontal: 28, vertical: 4),
-                    onTap: onTabChange,
-                    tabs: tabs)),
-            appBar: !searchPressed
-                ? PreferredSize(
-                    preferredSize: Size(double.infinity, kToolbarHeight + 8),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: ThemeColors.primaryColor,
-                          gradient: LinearGradient(
-                            begin: Alignment.topRight,
-                            end: Alignment.bottomLeft,
-                            colors: [
-                              ThemeColors.primaryColor,
-                              Colors.blue.shade600,
-                            ],
-                          ),
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(0),
-                              bottomRight: Radius.circular(0))),
-                      child: AppBar(
-                        elevation: 0,
-                        centerTitle: true,
-                        backgroundColor: AppColors.transparent,
-                        title: UserCircle(),
-                        actions: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: IconButton(
-                              icon: Icon(Icons.search),
-                              color: AppColors.white,
-                              onPressed: () {
-                                searchOnPressed();
-                                //Navigator.pushNamed(context, '/search');
-                              },
+                  child: TabBar(
+                      controller: tabBarCtrl,
+                      indicatorColor: ThemeColors.receiverColor,
+                      indicatorWeight: 4,
+                      indicatorPadding: EdgeInsets.symmetric(vertical: 4),
+                      labelPadding:
+                          EdgeInsets.symmetric(horizontal: 28, vertical: 4),
+                      onTap: onTabChange,
+                      tabs: tabs)),
+              appBar: !searchPressed
+                  ? PreferredSize(
+                      preferredSize: Size(double.infinity, kToolbarHeight + 8),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: ThemeColors.primaryColor,
+                            gradient: LinearGradient(
+                              begin: Alignment.topRight,
+                              end: Alignment.bottomLeft,
+                              colors: [
+                                ThemeColors.primaryColor,
+                                Colors.blue.shade600,
+                              ],
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child:
-                                Icon(Icons.more_vert, color: AppColors.white),
-                          )
-                        ],
-                        // bottom:
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(0),
+                                bottomRight: Radius.circular(0))),
+                        child: AppBar(
+                          elevation: 0,
+                          centerTitle: true,
+                          backgroundColor: AppColors.transparent,
+                          title: UserCircle(),
+                          actions: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: IconButton(
+                                icon: Icon(Icons.search),
+                                color: AppColors.white,
+                                onPressed: () {
+                                  searchOnPressed();
+                                  //Navigator.pushNamed(context, '/search');
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child:
+                                  Icon(Icons.more_vert, color: AppColors.white),
+                            )
+                          ],
+                          // bottom:
+                        ),
                       ),
-                    ),
-                  )
-                : AppBar(
-                    leading: IconButton(
-                      icon: new Icon(Icons.arrow_back),
-                      onPressed: () {
-                        searchOnPressed();
-                      },
-                    ),
-                    title: TextField(
-                      controller: searchTextEditingController,
-                      decoration: InputDecoration(hintText: "Search"),
-                      onChanged: (value) {
-                        print(value);
-                        searchResult = value.isEmpty
-                            ? userList
-                            : userList.where((CAUser user) {
-                                bool matchesUsername = user.username
-                                    .toLowerCase()
-                                    .contains(value.toLowerCase());
-                                bool matchesName = user.name
-                                    .toLowerCase()
-                                    .contains(value.toLowerCase());
-                                return matchesUsername || matchesName;
-                              }).toList();
-                        setState(() {});
-                      },
-                      onSubmitted: (input) {
-                        // myFuture = FirebaseServices.getUsersBySearch(input)
-                        //     .then((value) {
-                        //   print("Value= " + value.toString());
-                        //   setState(() {
-                        //     searching = true;
-                        //   });
-                        // });
-                      },
-                    ),
-                    actions: <Widget>[
-                      new IconButton(
-                        icon: new Icon(Icons.close),
+                    )
+                  : AppBar(
+                      leading: IconButton(
+                        icon: new Icon(Icons.arrow_back),
                         onPressed: () {
                           searchOnPressed();
-                          //widget.onChanged();
                         },
                       ),
-                    ],
-                  ),
-            body: TabBarView(controller: tabBarCtrl, children: [
-              Container(
-                margin: EdgeInsets.only(top: 8),
-                decoration: BoxDecoration(
-                    color: ThemeColors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(32),
-                        topRight: Radius.circular(32))),
-                child: Center(child: Text('Personal Chat Room')),
-              ),
-              !searchPressed ? ChatsList() : Search(searchResult: searchResult),
-              Center(
-                child: Text('Call Logs'),
-              ),
-              Center(
-                child: Text('Contacts'),
-              )
-            ]),
-          )),
+                      title: TextField(
+                        controller: searchTextEditingController,
+                        decoration: InputDecoration(hintText: "Search"),
+                        onChanged: (value) {
+                          print(value);
+                          searchResult = value.isEmpty
+                              ? userList
+                              : userList.where((CAUser user) {
+                                  bool matchesUsername = user.username
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase());
+                                  bool matchesName = user.name
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase());
+                                  return matchesUsername || matchesName;
+                                }).toList();
+                          setState(() {});
+                        },
+                        onSubmitted: (input) {
+                          // myFuture = FirebaseServices.getUsersBySearch(input)
+                          //     .then((value) {
+                          //   print("Value= " + value.toString());
+                          //   setState(() {
+                          //     searching = true;
+                          //   });
+                          // });
+                        },
+                      ),
+                      actions: <Widget>[
+                        new IconButton(
+                          icon: new Icon(Icons.close),
+                          onPressed: () {
+                            searchOnPressed();
+                            //widget.onChanged();
+                          },
+                        ),
+                      ],
+                    ),
+              body: TabBarView(controller: tabBarCtrl, children: [
+                Container(
+                  margin: EdgeInsets.only(top: 8),
+                  decoration: BoxDecoration(
+                      color: ThemeColors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32))),
+                  child: Center(child: Text('Personal Chat Room')),
+                ),
+                !searchPressed
+                    ? ChatsList()
+                    : Search(searchResult: searchResult),
+                Center(
+                  child: Text('Call Logs'),
+                ),
+                Center(
+                  child: Text('Contacts'),
+                )
+              ]),
+            )),
+      ),
     );
   }
 }
