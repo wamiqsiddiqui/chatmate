@@ -29,6 +29,7 @@ class FirebaseServices {
       }
       return true;
     } catch (e) {
+      print('Error getting Current User = $e');
       return false;
     }
   }

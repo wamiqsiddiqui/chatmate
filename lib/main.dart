@@ -11,13 +11,14 @@ import 'package:flutter/material.dart';
 Future<void> backgroundHandler(RemoteMessage message) async {
   print('background handler = ${message.data.toString()}');
   print('background handler title = ${message.notification!.title}');
+  LocalNotificationService.createAndDisplayNotificationChannel(message);
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   FirebaseApp firebaseApp = await Firebase.initializeApp();
+  await LocalNotificationService.initialize();
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-  LocalNotificationService.initialize();
   print('firebase app = ${firebaseApp.name} ${firebaseApp.options.projectId}');
   runApp(MyApp());
 }
