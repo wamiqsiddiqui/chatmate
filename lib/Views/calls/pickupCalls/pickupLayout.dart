@@ -12,15 +12,26 @@ class PickupLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<DocumentSnapshot>(
-      stream: callMethods.callStream(FirebaseServices.currentUser!.uid),
-      builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.hasData && snapshot.data != null) {
-          Call call = Call.fromMap(snapshot.data!);
-          return PickupScreen(call: call);
-        }
-        return scaffold;
-      },
-    );
+    try {
+      return FirebaseServices.currentUser != null
+          ? StreamBuilder<DocumentSnapshot>(
+              stream: callMethods.callStream(FirebaseServices.currentUser!.uid),
+              builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                print('snapshot.data!.exists = ${snapshot.data!.exists}');
+                if (snapshot.hasData && snapshot.data!.exists) {
+                  Call call = Call.fromMap(snapshot.data!);
+                  if (!call.hasDialed) {
+                    return PickupScreen(call: call);
+                  } else {
+                    return scaffold;
+                  }
+                }
+                return scaffold;
+              },
+            )
+          : CircularProgressIndicator();
+    } catch (e) {
+      return CircularProgressIndicator();
+    }
   }
 }
