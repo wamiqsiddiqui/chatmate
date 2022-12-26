@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
 import 'package:chatmate/Widgets/UserCircle.dart';
+import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:chatmate/themes/AppColors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
@@ -19,6 +21,21 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    FirebaseMessaging.onMessage.listen((message) {
+      print('FirebaseMEssaging.onMessage.listen');
+      if (message.notification != null) {
+        print('message.notification!.title = ${message.notification!.title}');
+        print('message.notification!.body = ${message.notification!.body}');
+        print('message.data = ${message.data}');
+        LocalNotificationService.createAndDisplayNotificationChannel(message);
+      }
+    });
+  }
+
   TextEditingController sendTextCtrl = TextEditingController();
   ScrollController chatScrollCtrl = ScrollController();
   List<bool> chats = [true, false, true, false, false, false, true];
@@ -127,6 +144,11 @@ class _ChatRoomState extends State<ChatRoom> {
   sendMessage(String text) async {
     await FirebaseServices.sendMessage(
         text, widget.receiver.uid, widget.receiver.name);
+    LocalNotificationService.sendMessageNotification(
+        'New Message from ${FirebaseServices.currentUser!.displayName!}',
+        text,
+        widget.receiver.fcmToken,
+        FirebaseServices.currentUser!.photoURL!);
   }
 
   @override

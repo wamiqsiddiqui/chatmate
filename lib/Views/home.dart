@@ -64,6 +64,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       // method is called waking app from termination state
       if (message != null) {
         print('NEw Notification');
+        LocalNotificationService.createAndDisplayNotificationChannel(message);
       }
     });
 
@@ -83,6 +84,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         print('message.notification!.title = ${message.notification!.title}');
         print('message.notification!.body = ${message.notification!.body}');
         print("message.data = ${message.data['_id']}");
+        LocalNotificationService.createAndDisplayNotificationChannel(message);
       }
     });
     print('getting user');
