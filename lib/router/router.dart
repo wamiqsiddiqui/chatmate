@@ -1,5 +1,6 @@
 import 'package:chatmate/Views/ChatRoom.dart';
 import 'package:chatmate/Views/Search.dart';
+import 'package:chatmate/Views/calls/callScreen.dart';
 import 'package:chatmate/Views/home.dart';
 import 'package:chatmate/router/arguments.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,6 +21,11 @@ class MainRouter {
         ChatRoomArguments arguments = settings.arguments as ChatRoomArguments;
         return MaterialPageRoute(
             builder: (_) => ChatRoom(receiver: arguments.receiver));
+      case '/callScreen':
+        CallScreenArguments arguments =
+            settings.arguments as CallScreenArguments;
+        return MaterialPageRoute(
+            builder: (_) => CallScreen(call: arguments.call));
       default:
         return MaterialPageRoute(builder: (_) => Home());
     }
