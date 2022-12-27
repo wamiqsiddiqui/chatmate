@@ -13,7 +13,7 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   bool _isHidden = true, flag = false;
-  late String _email, _password;
+  // late String _email, _password;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   void _togglePasswordView() {
     setState(() {
@@ -22,7 +22,7 @@ class _SignInState extends State<SignIn> {
   }
 
   Future signIn() async {
-    final _formState = _formKey.currentState;
+    // final _formState = _formKey.currentState;
     var results = await Connectivity().checkConnectivity();
 
     if (results == ConnectivityResult.none) {
@@ -102,12 +102,6 @@ class _SignInState extends State<SignIn> {
     }
   }
 
-  /**
-   * decoration: BoxDecoration(
-                color: ThemeColors.receiverColor,
-                borderRadius: BorderRadius.only(topRight: Radius.circular(200),topLeft: Radius.circular(200))
-              ),
-   */
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,7 +141,7 @@ class _SignInState extends State<SignIn> {
                         height: 15,
                       ),
                       TextFormField(
-                        onSaved: (input) => _email = input!,
+                        // onSaved: (input) => _email = input!,
                         validator: (input) {
                           if (input!.contains("@")) {
                             return null;
@@ -163,7 +157,7 @@ class _SignInState extends State<SignIn> {
                         height: 15,
                       ),
                       TextFormField(
-                        onSaved: (input) => _password = input!,
+                        // onSaved: (input) => _password = input!,
                         validator: (input) {
                           if (input!.length < 6) {
                             print(
@@ -212,8 +206,6 @@ class _SignInState extends State<SignIn> {
                           ),*/
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0)),
-                              primary: ThemeColors.primaryColor,
-                              onPrimary: Colors.pink,
                               minimumSize: Size(
                                   MediaQuery.of(context).size.width / 2, 50)),
                           onPressed: () {
@@ -249,8 +241,6 @@ class _SignInState extends State<SignIn> {
                           ),*/
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0)),
-                              primary: ThemeColors.primaryColor,
-                              onPrimary: Colors.pink,
                               minimumSize: Size(
                                   MediaQuery.of(context).size.width / 2, 50)),
                           onPressed: () {

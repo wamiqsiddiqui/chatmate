@@ -1,4 +1,3 @@
-import 'package:chatmate/Utilities/colors.dart';
 import 'package:chatmate/themes/AppColors.dart';
 import 'package:flutter/material.dart';
 class Decorations{

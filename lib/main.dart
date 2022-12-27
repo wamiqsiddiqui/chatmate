@@ -1,5 +1,3 @@
-import 'package:chatmate/Views/ChatRoom.dart';
-import 'package:chatmate/Views/Search.dart';
 import 'package:chatmate/Views/SplashScreen.dart';
 import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:chatmate/router/router.dart';

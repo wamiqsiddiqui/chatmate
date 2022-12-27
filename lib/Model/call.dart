@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Call {
   final String callerId;
   final String callerName;
@@ -18,7 +20,7 @@ class Call {
       required this.channelId,
       required this.hasDialed});
 
-  factory Call.fromMap(Map<String, dynamic> map) => Call(
+  factory Call.fromMap(DocumentSnapshot map) => Call(
       callerId: map['callerId'],
       callerName: map['callerName'],
       callerPic: map['callerPic'],

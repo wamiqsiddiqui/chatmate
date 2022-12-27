@@ -4,7 +4,6 @@ import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Model/call.dart';
 import 'package:chatmate/Model/callMethods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 class CallHelper {
   static final CallMethods callMethods = CallMethods();
