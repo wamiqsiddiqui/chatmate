@@ -1,41 +1,56 @@
 import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:chatmate/Model/call.dart';
-import 'package:chatmate/Model/callMethods.dart';
-import 'package:chatmate/Services/FirebaseServices.dart';
-import 'package:chatmate/configs/agoraConfigs.dart';
-import 'package:chatmate/themes/AppColors.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
+import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
-class CallScreen extends StatefulWidget {
-  final Call call;
-  const CallScreen({Key? key, required this.call}) : super(key: key);
+import '../utils/settings.dart';
+
+class CallPage extends StatefulWidget {
+  /// non-modifiable channel name of the page
+  final String? channelName;
+
+  /// non-modifiable client role of the page
+  final ClientRole? role;
+
+  /// Creates a call page with given channel name.
+  const CallPage({Key? key, this.channelName, this.role}) : super(key: key);
 
   @override
-  State<CallScreen> createState() => _CallScreenState();
+  _CallPageState createState() => _CallPageState();
 }
 
-class _CallScreenState extends State<CallScreen> {
+class _CallPageState extends State<CallPage> {
   final _users = <int>[];
   final _infoStrings = <String>[];
   bool muted = false;
   late RtcEngine _engine;
 
-  CallMethods callMethods = CallMethods();
-  late StreamSubscription callStreamSubscription;
+  @override
+  void dispose() {
+    // clear users
+    _users.clear();
+    _dispose();
+    super.dispose();
+  }
+
+  Future<void> _dispose() async {
+    // destroy sdk
+    await _engine.leaveChannel();
+    await _engine.destroy();
+  }
 
   @override
   void initState() {
     super.initState();
-    addPostFrameCallback();
-    initializeAgora();
+    // initialize agora sdk
+    initialize();
   }
 
-  Future<void> initializeAgora() async {
-    if (APP_ID.isEmpty) {
+  Future<void> initialize() async {
+    if (appId.isEmpty) {
       setState(() {
         _infoStrings.add(
           'APP_ID missing, please provide your APP_ID in settings.dart',
@@ -48,55 +63,49 @@ class _CallScreenState extends State<CallScreen> {
     await _initAgoraRtcEngine();
     _addAgoraEventHandlers();
     VideoEncoderConfiguration configuration = VideoEncoderConfiguration();
-    // configuration.dimensions = VideoDimensions(width: 1920, height: 1080);
+    configuration.dimensions = VideoDimensions(width: 1920, height: 1080);
     await _engine.setVideoEncoderConfiguration(configuration);
-    await _engine.joinChannel(
-        channelId: widget.call.channelId,
-        options: ChannelMediaOptions(),
-        token: '',
-        uid: 0);
+    await _engine.joinChannel(token, widget.channelName!, null, 0);
   }
 
   /// Create agora sdk instance and initialize
   Future<void> _initAgoraRtcEngine() async {
-    _engine = createAgoraRtcEngine();
+    _engine = await RtcEngine.create(appId);
     await _engine.enableVideo();
-    await _engine
-        .setChannelProfile(ChannelProfileType.channelProfileLiveBroadcasting);
-    // await _engine.setClientRole(role: widget.role!);
+    await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
+    await _engine.setClientRole(widget.role!);
   }
 
   /// Add agora event handlers
   void _addAgoraEventHandlers() {
-    _engine.registerEventHandler(RtcEngineEventHandler(onError: (code, val) {
+    _engine.setEventHandler(RtcEngineEventHandler(error: (code) {
       setState(() {
         final info = 'onError: $code';
         _infoStrings.add(info);
       });
-    }, onJoinChannelSuccess: (channel, uid) {
+    }, onJoinChannelSuccess: (channel, uid, elapsed) {
       setState(() {
         final info = 'onJoinChannel: $channel, uid: $uid';
         _infoStrings.add(info);
       });
-    }, onLeaveChannel: (connection, stats) {
+    }, leaveChannel: (stats) {
       setState(() {
         _infoStrings.add('onLeaveChannel');
         _users.clear();
       });
-    }, onUserJoined: (uid, elapsed, val) {
+    }, userJoined: (uid, elapsed) {
       setState(() {
         final info = 'userJoined: $uid';
         _infoStrings.add(info);
-        _users.add(uid.localUid!);
+        _users.add(uid);
       });
-    }, onUserOffline: (uid, elapsed, userOfflineReasonType) {
-      callMethods.endCall(widget.call);
+    }, userOffline: (uid, elapsed) {
       setState(() {
         final info = 'userOffline: $uid';
         _infoStrings.add(info);
         _users.remove(uid);
       });
-    }, onFirstRemoteVideoFrame: (uid, width, height, elapsed, val) {
+    }, firstRemoteVideoFrame: (uid, width, height, elapsed) {
       setState(() {
         final info = 'firstRemoteVideo: $uid ${width}x $height';
         _infoStrings.add(info);
@@ -104,52 +113,30 @@ class _CallScreenState extends State<CallScreen> {
     }));
   }
 
-  addPostFrameCallback() {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      callStreamSubscription = callMethods
-          .callStream(FirebaseServices.currentUser!.uid)
-          .listen((DocumentSnapshot documentSnapshot) {
-        switch (documentSnapshot.data()) {
-          case null:
-            Navigator.pop(context);
-            break;
-          default:
-            break;
-        }
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    // clear users
-    _users.clear();
-    _dispose();
-    callStreamSubscription.cancel();
-    super.dispose();
-  }
-
-  Future<void> _dispose() async {
-    // destroy sdk
-    await _engine.leaveChannel();
-    // await _engine.destroy();
-  }
-
   /// Helper function to get list of native views
   List<Widget> _getRenderViews() {
     final List<StatefulWidget> list = [];
-    // if (widget.role == ClientRole.Broadcaster) {
-    //   list.add(AgoraVideoView.SurfaceView());
-    // }
-    _users.forEach((int uid) => list.add(AgoraVideoView(
-          controller: VideoViewController(
-            rtcEngine: _engine,
-            canvas: const VideoCanvas(uid: 0),
-          ),
-        )
-            // RtcRemoteView.SurfaceView(channelId: widget.channelName!, uid: uid)
-            ));
+    if (widget.role == ClientRole.Broadcaster) {
+      list.add(RtcLocalView.SurfaceView());
+    }
+    _users.forEach((int uid) => list.add(
+        RtcRemoteView.SurfaceView(channelId: widget.channelName!, uid: uid)));
     return list;
+  }
+
+  /// Video view wrapper
+  Widget _videoView(view) {
+    return Expanded(child: Container(child: view));
+  }
+
+  /// Video view row wrapper
+  Widget _expandedVideoRow(List<Widget> views) {
+    final wrappedViews = views.map<Widget>(_videoView).toList();
+    return Expanded(
+      child: Row(
+        children: wrappedViews,
+      ),
+    );
   }
 
   /// Video layout wrapper
@@ -190,17 +177,52 @@ class _CallScreenState extends State<CallScreen> {
     return Container();
   }
 
-  /// Video view wrapper
-  Widget _videoView(view) {
-    return Expanded(child: Container(child: view));
-  }
-
-  /// Video view row wrapper
-  Widget _expandedVideoRow(List<Widget> views) {
-    final wrappedViews = views.map<Widget>(_videoView).toList();
-    return Expanded(
+  /// Toolbar layout
+  Widget _toolbar() {
+    if (widget.role == ClientRole.Audience) return Container();
+    return Container(
+      alignment: Alignment.bottomCenter,
+      padding: const EdgeInsets.symmetric(vertical: 48),
       child: Row(
-        children: wrappedViews,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          RawMaterialButton(
+            onPressed: _onToggleMute,
+            child: Icon(
+              muted ? Icons.mic_off : Icons.mic,
+              color: muted ? Colors.white : Colors.blueAccent,
+              size: 20.0,
+            ),
+            shape: CircleBorder(),
+            elevation: 2.0,
+            fillColor: muted ? Colors.blueAccent : Colors.white,
+            padding: const EdgeInsets.all(12.0),
+          ),
+          RawMaterialButton(
+            onPressed: () => _onCallEnd(context),
+            child: Icon(
+              Icons.call_end,
+              color: Colors.white,
+              size: 35.0,
+            ),
+            shape: CircleBorder(),
+            elevation: 2.0,
+            fillColor: Colors.redAccent,
+            padding: const EdgeInsets.all(15.0),
+          ),
+          RawMaterialButton(
+            onPressed: _onSwitchCamera,
+            child: Icon(
+              Icons.switch_camera,
+              color: Colors.blueAccent,
+              size: 20.0,
+            ),
+            shape: CircleBorder(),
+            elevation: 2.0,
+            fillColor: Colors.white,
+            padding: const EdgeInsets.all(12.0),
+          )
+        ],
       ),
     );
   }
@@ -271,59 +293,12 @@ class _CallScreenState extends State<CallScreen> {
     _engine.switchCamera();
   }
 
-  /// Toolbar layout
-  Widget _toolbar() {
-    // if (widget.role == ClientRole.Audience) return Container();
-    return Container(
-      alignment: Alignment.bottomCenter,
-      padding: const EdgeInsets.symmetric(vertical: 48),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          RawMaterialButton(
-            onPressed: _onToggleMute,
-            child: Icon(
-              muted ? Icons.mic_off : Icons.mic,
-              color: muted ? Colors.white : Colors.blueAccent,
-              size: 20.0,
-            ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: muted ? Colors.blueAccent : Colors.white,
-            padding: const EdgeInsets.all(12.0),
-          ),
-          RawMaterialButton(
-            onPressed: () => callMethods.endCall(widget.call),
-            child: Icon(
-              Icons.call_end,
-              color: Colors.white,
-              size: 35.0,
-            ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: Colors.redAccent,
-            padding: const EdgeInsets.all(15.0),
-          ),
-          RawMaterialButton(
-            onPressed: _onSwitchCamera,
-            child: Icon(
-              Icons.switch_camera,
-              color: Colors.blueAccent,
-              size: 20.0,
-            ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: Colors.white,
-            padding: const EdgeInsets.all(12.0),
-          )
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Agora Flutter QuickStart'),
+      ),
       backgroundColor: Colors.black,
       body: Center(
         child: Stack(
