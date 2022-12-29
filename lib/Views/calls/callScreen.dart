@@ -123,7 +123,9 @@ class _CallScreenState extends State<CallScreen> {
           setState(() {
             final info = 'userJoined: $remoteUid';
             _infoStrings.add(info);
-            _users.add(remoteUid);
+            if (!_users.any((element) => element == remoteUid)) {
+              _users.add(remoteUid);
+            }
           });
       }, onUserOffline: (uid, elapsed, userOfflineReasonType) {
         callMethods.endCall(widget.call);
@@ -188,16 +190,16 @@ class _CallScreenState extends State<CallScreen> {
       ));
     }
     print('_users = ${_users.length}');
-    // _users.forEach((int uid) =>
-    list.add(AgoraVideoView(
-      controller: VideoViewController.remote(
-        rtcEngine: _engine,
-        canvas: VideoCanvas(uid: _users[0]),
-        connection: RtcConnection(channelId: widget.call.channelId),
-      ),
-    ));
-    // RtcRemoteView.SurfaceView(channelId: widget.channelName!, uid: uid)
-    // ));
+    _users.forEach((int uid) => list.add(AgoraVideoView(
+          controller: VideoViewController.remote(
+            useAndroidSurfaceView: true,
+            rtcEngine: _engine,
+            canvas: VideoCanvas(uid: uid),
+            connection: RtcConnection(channelId: widget.call.channelId),
+          ),
+        )
+            // RtcRemoteView.SurfaceView(channelId: widget.channelName!, uid: uid)
+            ));
     // list.add(AgoraVideoView(
     //   controller: VideoViewController.remote(
     //     rtcEngine: _engine,
