@@ -13,6 +13,8 @@ class PickupLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     try {
+      print(
+          'FirebaseServices.currentUser!.uid - ${FirebaseServices.currentUser!.uid}');
       return FirebaseServices.currentUser != null
           ? StreamBuilder<DocumentSnapshot>(
               stream: callMethods.callStream(FirebaseServices.currentUser!.uid),
@@ -20,6 +22,15 @@ class PickupLayout extends StatelessWidget {
                 print('snapshot.data!.exists = ${snapshot.data!.exists}');
                 if (snapshot.hasData && snapshot.data!.exists) {
                   Call call = Call.fromMap(snapshot.data!);
+                  print('Pickup Layout.dart');
+                  print(
+                      'FirebaseServices.currentUser!.uid - ${FirebaseServices.currentUser!.uid}');
+                  print('call.hasDialed = ${call.hasDialed}');
+                  print('callerName = ${call.callerName}');
+                  print('receiverName = ${call.receiverName}');
+                  print('hasDialed = ${call.hasDialed}');
+                  print('channelId = ${call.channelId}');
+                  // print('callerName = ${call.}');
                   if (!call.hasDialed) {
                     return PickupScreen(call: call);
                   } else {

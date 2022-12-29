@@ -1,6 +1,7 @@
 import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Model/call.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
+import 'package:chatmate/Utilities/permissions.dart';
 import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:chatmate/Utilities/callHelper.dart';
 import 'package:chatmate/router/arguments.dart';
@@ -149,6 +150,22 @@ class _ChatRoomState extends State<ChatRoom> {
         FirebaseServices.currentUser!.photoURL!);
   }
 
+  dial() async {
+    debugPrint('dial = ${FirebaseServices.currentUser!.uid}');
+    Call call = await CallHelper.dial(
+        FirebaseServices.currentUser!, widget.receiver, context);
+    print('dial in Chatroom.dart');
+    print('call.hasDialed = ${call.hasDialed}');
+    print('callerName = ${call.callerName}');
+    print('receiverName = ${call.receiverName}');
+    print('hasDialed = ${call.hasDialed}');
+    print('channelId = ${call.channelId}');
+    CallScreenArguments arguments =
+        CallScreenArguments(call: call, hasDialed: true);
+    Navigator.pushNamed(context, '/callScreen', arguments: arguments);
+    errorMessage = '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,13 +194,9 @@ class _ChatRoomState extends State<ChatRoom> {
               icon: Icon(Icons.video_call_rounded),
               onPressed: () async {
                 try {
-                  Call call = await CallHelper.dial(
-                      FirebaseServices.currentUser!, widget.receiver, context);
-                  CallScreenArguments arguments =
-                      CallScreenArguments(call: call);
-                  Navigator.pushNamed(context, '/callScreen',
-                      arguments: arguments);
-                  errorMessage = '';
+                  // await Permissions.cameraAndMicrophonePermissionsGranted()
+                  dial();
+                  // : {};
                 } catch (e) {
                   errorMessage = 'Something went wrong please try again!';
                   print('Error while getting call object = $e');

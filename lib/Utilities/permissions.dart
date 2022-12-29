@@ -19,30 +19,22 @@ class Permissions {
   }
 
   static Future<PermissionStatus> _getCameraPermission() async {
-    PermissionStatus permission =
-        await PermissionHandler().checkPermissionStatus(PermissionGroup.camera);
-    if (permission != PermissionStatus.granted &&
-        permission != PermissionStatus.disabled) {
-      Map<PermissionGroup, PermissionStatus> permissionStatus =
-          await PermissionHandler()
-              .requestPermissions([PermissionGroup.camera]);
-      return permissionStatus[PermissionGroup.camera] ??
-          PermissionStatus.unknown;
+    PermissionStatus permission = await Permission.camera.status;
+    if (permission.isDenied || !permission.isGranted) {
+      Permission permission = Permission.camera;
+      final PermissionStatus status = await permission.request();
+      return status;
     } else {
       return permission;
     }
   }
 
   static Future<PermissionStatus> _getMicrophonePermission() async {
-    PermissionStatus permission = await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.microphone);
-    if (permission != PermissionStatus.granted &&
-        permission != PermissionStatus.disabled) {
-      Map<Per, PermissionStatus> permissionStatus =
-          await PermissionHandler()
-              .requestPermissions([PermissionGroup.microphone]);
-      return permissionStatus[PermissionGroup.microphone] ??
-          PermissionStatus.unknown;
+    PermissionStatus permission = await Permission.microphone.status;
+    if (permission.isDenied || !permission.isGranted) {
+      Permission permission = Permission.microphone;
+      final PermissionStatus status = await permission.request();
+      return status;
     } else {
       return permission;
     }
@@ -58,8 +50,8 @@ class Permissions {
           code: "PERMISSION_DENIED",
           message: "Access to camera and microphone denied",
           details: null);
-    } else if (cameraPermissionStatus == PermissionStatus.disabled &&
-        microphonePermissionStatus == PermissionStatus.disabled) {
+    } else if (cameraPermissionStatus == PermissionStatus.denied &&
+        microphonePermissionStatus == PermissionStatus.denied) {
       throw new PlatformException(
           code: "PERMISSION_DISABLED",
           message: "Location data is not available on device",

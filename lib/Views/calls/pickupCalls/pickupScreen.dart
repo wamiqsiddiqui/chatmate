@@ -1,5 +1,6 @@
 import 'package:chatmate/Model/call.dart';
 import 'package:chatmate/Model/callMethods.dart';
+import 'package:chatmate/Utilities/permissions.dart';
 import 'package:chatmate/router/arguments.dart';
 import 'package:chatmate/themes/AppColors.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,12 @@ class PickupScreen extends StatelessWidget {
   PickupScreen({Key? key, required this.call}) : super(key: key);
 
   final CallMethods callMethods = CallMethods();
+
+  pickupCall(context) {
+    CallScreenArguments arguments =
+        CallScreenArguments(call: call, hasDialed: true);
+    Navigator.pushNamed(context, '/callScreen', arguments: arguments);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +45,10 @@ class PickupScreen extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.call),
                   color: AppColors.successGreenColor,
-                  onPressed: () {
-                    CallScreenArguments arguments =
-                        CallScreenArguments(call: call);
-                    Navigator.pushNamed(context, '/callScreen',
-                        arguments: arguments);
+                  onPressed: () async {
+                    await Permissions.cameraAndMicrophonePermissionsGranted()
+                        ? pickupCall(context)
+                        : {};
                   },
                 )
               ],
