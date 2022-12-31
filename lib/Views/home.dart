@@ -53,7 +53,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    tabBarCtrl = TabController(length: 4, vsync: this);
+    tabBarCtrl = TabController(length: 4, vsync: this, initialIndex: 1);
 
     // 1. This method call when app in terminated state and you get a notification
     // when you click on notification app open from terminated state and you can get notification data in this method
@@ -100,11 +100,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return SafeArea(
       child: PickupLayout(
-        scaffold: DefaultTabController(
+        scaffoldChild: DefaultTabController(
             length: 4,
             initialIndex: 2,
             child: Scaffold(
-              // backgroundColor: ThemeColors.primaryColor,
               bottomNavigationBar: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(

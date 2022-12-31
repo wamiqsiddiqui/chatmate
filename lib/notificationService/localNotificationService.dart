@@ -76,9 +76,6 @@ class LocalNotificationService {
     };
 
     try {
-      // await Hive.initFlutter('${appDir.path}/cache');
-      // Box box = await Hive.openBox('tokenBox');
-      // String fcmToken = box.get('fcmToken');
       http.Response response = await http.post(
           Uri.parse('https://fcm.googleapis.com/fcm/send'),
           headers: <String, String>{
