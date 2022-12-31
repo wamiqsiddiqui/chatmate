@@ -11,9 +11,9 @@ import 'package:hive_flutter/adapters.dart';
 class FirebaseServices {
   static User? currentUser;
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static final FirebaseAuth _auth = FirebaseAuth.instance;
   static Future<bool> getCurrentUser() async {
     try {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
       currentUser = _auth.currentUser!;
       DocumentSnapshot doc = await _firestore
           .collection(CollectionKeys.users)
@@ -90,6 +90,7 @@ class FirebaseServices {
         accessToken: signInAuthentication.accessToken,
         idToken: signInAuthentication.idToken);
     print('credential taken = ${credential.token}');
+    final FirebaseAuth _auth = FirebaseAuth.instance;
     UserCredential userCredential =
         await _auth.signInWithCredential(credential);
     User? user = userCredential.user!;
@@ -144,6 +145,7 @@ class FirebaseServices {
     GoogleSignIn googleSignIn = GoogleSignIn();
     await googleSignIn.disconnect();
     await googleSignIn.signOut();
+    final FirebaseAuth _auth = FirebaseAuth.instance;
     return await _auth.signOut();
   }
 
