@@ -110,7 +110,7 @@ class _ChatRoomState extends State<ChatRoom> {
             child: Padding(
               padding: EdgeInsets.all(12),
               child: Text(
-                snapshot['text'] + 'hasPendingWrites = $hasPendingWrites',
+                snapshot['text'],
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   color: AppColors.white,
@@ -126,8 +126,9 @@ class _ChatRoomState extends State<ChatRoom> {
               width: MediaQuery.of(context).size.width * 0.4,
               child: Text(
                 DateFormat('hh:mm a')
-                    .format(snapshot['timestamp'].toDate())
-                    .toString(),
+                        .format(snapshot['timestamp'].toDate())
+                        .toString() +
+                    " ${snapshot['status']}",
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   fontSize: 14,
@@ -147,7 +148,10 @@ class _ChatRoomState extends State<ChatRoom> {
         'New Message from ${FirebaseServices.currentUser!.displayName!}',
         text,
         widget.receiver.fcmToken,
-        FirebaseServices.currentUser!.photoURL!);
+        FirebaseServices.currentUser!.photoURL!,
+        receiverId: widget.receiver.uid,
+        receiverName: widget.receiver.name,
+        senderId: FirebaseServices.currentUser!.uid);
   }
 
   dial() async {

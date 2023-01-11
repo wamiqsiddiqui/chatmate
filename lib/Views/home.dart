@@ -74,6 +74,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         print('message.notification!.body = ${message.notification!.body}');
         print('message.data = ${message.data}');
         LocalNotificationService.createAndDisplayNotificationChannel(message);
+        FirebaseServices.setDeliveredStatus(
+            senderId: message.data['senderId'],
+            receiverId: message.data['receiverId'],
+            receiverName: message.data['receiverName']);
       }
     });
 

@@ -1,10 +1,12 @@
 import 'package:chatmate/Model/Message.dart';
 import 'package:chatmate/Model/Users.dart';
+import 'package:chatmate/Model/contacts.dart';
 import 'package:chatmate/Utilities/keys.dart';
 import 'package:chatmate/Utilities/utils.dart';
 import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/adapters.dart';
 
@@ -34,12 +36,109 @@ class FirebaseServices {
     }
   }
 
+  static Future<CAUser?> getUserDetailsById(String id) async {
+    try {
+      DocumentSnapshot documentSnapshot =
+          await _firestore.collection(CollectionKeys.users).doc(id).get();
+      return CAUser.fromJson(documentSnapshot);
+    } catch (e) {
+      print('Error getting user details by id = $e');
+      return null;
+    }
+  }
+
+  static addToContacts(
+      {required String senderId, required String receiverId}) async {
+    Timestamp currentTime = Timestamp.now();
+    await addToSendersContact(senderId, receiverId, currentTime);
+    await addToReceiversContact(senderId, receiverId, currentTime);
+  }
+
+  static Stream<QuerySnapshot> fetchContacts({required String userId}) =>
+      _firestore
+          .collection(CollectionKeys.users)
+          .doc(userId)
+          .collection(CollectionKeys.contacts)
+          .snapshots();
+
+  static Stream<QuerySnapshot> fetchLastMessageBetween(
+      {required String senderId,
+      required String receiverId,
+      required String receiverName}) {
+    var x = _firestore
+        .collection(CollectionKeys.messages)
+        .doc(currentUser!.displayName! + senderId)
+        .collection(receiverName + receiverId)
+        .orderBy('timestamp')
+        .snapshots();
+    setDeliveredStatus(
+        senderId: senderId, receiverId: receiverId, receiverName: receiverName);
+    return x;
+  }
+
+  static setDeliveredStatus(
+      {required String senderId,
+      required String receiverId,
+      required String receiverName}) async {
+    print('setting = ${receiverName + receiverId}');
+    print('${currentUser!.displayName!} + ${senderId}');
+    QuerySnapshot query = await _firestore
+        .collection(CollectionKeys.messages)
+        .doc(receiverName + receiverId)
+        .collection(currentUser!.displayName! + senderId)
+        .where('status', isEqualTo: describeEnum(MessageStatus.sent))
+        .get();
+    // print('query.docs = ${query.docs.length}');
+    // print('query.docs = ${query.docs.first}');
+    query.docs.forEach((doc) async {
+      print('updating = ${Message.fromMap(doc).toString()}');
+      await doc.reference
+          .update({'status': describeEnum(MessageStatus.delivered)});
+    });
+  }
+
+  static DocumentReference getContactsDocument(
+          {required String of, required String forContact}) =>
+      _firestore
+          .collection(CollectionKeys.users)
+          .doc(of)
+          .collection(CollectionKeys.contacts)
+          .doc(forContact);
+
+  static Future<void> addToSendersContact(
+      String senderId, String receiverId, currentTime) async {
+    DocumentSnapshot senderSnapshot =
+        await getContactsDocument(of: senderId, forContact: receiverId).get();
+
+    if (!senderSnapshot.exists) {
+      Contact receiverContact = Contact(uid: receiverId, addedOn: currentTime);
+      await getContactsDocument(of: senderId, forContact: receiverId)
+          .set(Contact.toMap(receiverContact));
+    }
+  }
+
+  static Future<void> addToReceiversContact(
+      String senderId, String receiverId, currentTime) async {
+    DocumentSnapshot receiverSnapshot =
+        await getContactsDocument(of: receiverId, forContact: senderId).get();
+
+    if (!receiverSnapshot.exists) {
+      Contact senderContact = Contact(uid: senderId, addedOn: currentTime);
+      await getContactsDocument(of: receiverId, forContact: senderId)
+          .set(Contact.toMap(senderContact));
+    }
+  }
+
   static Stream<QuerySnapshot> receiveMessage(
 
       /// When receive api is called, the message is delivered
       String receiverId,
       String receiverName) {
     print('listening');
+    setDeliveredStatus(
+        senderId: currentUser!.uid,
+        receiverId: receiverId,
+        receiverName: receiverName);
     return _firestore
         .collection(CollectionKeys.messages)
         .doc(currentUser!.displayName! + currentUser!.uid)
@@ -61,6 +160,7 @@ class FirebaseServices {
                 senderId: currentUser!.uid,
                 text: message,
                 type: 'text',
+                status: describeEnum(MessageStatus.sent),
                 timestamp: Timestamp.now())
             .toMap());
     await _firestore
@@ -74,8 +174,12 @@ class FirebaseServices {
                 senderId: currentUser!.uid,
                 text: message,
                 type: 'text',
+                status: describeEnum(MessageStatus.received),
                 timestamp: Timestamp.now())
             .toMap());
+    print(
+        'FieldValue.serverTimestamp() = ${FieldValue.serverTimestamp().toString()}');
+    await addToContacts(senderId: currentUser!.uid, receiverId: receiverId);
   }
 
   static Future<User?> signInWithGoogle() async {

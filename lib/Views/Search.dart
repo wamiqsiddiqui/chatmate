@@ -5,7 +5,7 @@ import 'package:chatmate/themes/AppColors.dart';
 import 'package:flutter/material.dart';
 
 class Search extends StatefulWidget {
-  List<CAUser> searchResult;
+  final List<CAUser> searchResult;
   Search({required this.searchResult});
   @override
   _SearchState createState() => _SearchState();

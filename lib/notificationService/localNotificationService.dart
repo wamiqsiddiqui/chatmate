@@ -67,11 +67,20 @@ class LocalNotificationService {
   }
 
   static sendMessageNotification(
-      String title, String message, String fcmToken, String image) async {
+    String title,
+    String message,
+    String fcmToken,
+    String image, {
+    required String senderId,
+    required String receiverId,
+    required String receiverName,
+  }) async {
     final data = {
       'click_action': 'FLUTTER_NOTIFICATION_CLICK',
       'id': '1',
-      'status': 'done',
+      'senderId': senderId,
+      'receiverId': receiverId,
+      'receiverName': receiverName,
       'message': message
     };
 
