@@ -50,7 +50,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         /*text: 'Contacts',*/ icon:
             Icon(Icons.contacts_rounded, color: AppColors.white))
   ];
-  @override
+  @override 
   void initState() {
     super.initState();
     tabBarCtrl = TabController(length: 4, vsync: this, initialIndex: 1);
@@ -64,18 +64,24 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       if (message != null) {
         print('NEw Notification');
         LocalNotificationService.createAndDisplayNotificationChannel(message);
+        FirebaseServices.setDeliveredStatus(
+            senderId: message.data['senderId'],
+            senderName: message.data['senderName'],
+            receiverId: message.data['receiverId'],
+            receiverName: message.data['receiverName']);
       }
     });
 
     FirebaseMessaging.onMessage.listen((message) {
-      print('FirebaseMEssaging.onMessage.listen');
       if (message.notification != null) {
-        print('message.notification!.title = ${message.notification!.title}');
-        print('message.notification!.body = ${message.notification!.body}');
-        print('message.data = ${message.data}');
         LocalNotificationService.createAndDisplayNotificationChannel(message);
+        // FirebaseServices.setDeliveredStatus(
+        //     senderId: message.data['senderId'],
+        //     receiverId: message.data['receiverId'],
+        //     receiverName: message.data['receiverName']);
         FirebaseServices.setDeliveredStatus(
             senderId: message.data['senderId'],
+            senderName: message.data['senderName'],
             receiverId: message.data['receiverId'],
             receiverName: message.data['receiverName']);
       }
@@ -88,6 +94,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         print('message.notification!.body = ${message.notification!.body}');
         print("message.data = ${message.data['_id']}");
         LocalNotificationService.createAndDisplayNotificationChannel(message);
+        FirebaseServices.setDeliveredStatus(
+            senderId: message.data['senderId'],
+            senderName: message.data['senderName'],
+            receiverId: message.data['receiverId'],
+            receiverName: message.data['receiverName']);
       }
     });
     print('getting user');

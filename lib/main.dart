@@ -1,3 +1,4 @@
+import 'package:chatmate/Services/FirebaseServices.dart';
 import 'package:chatmate/Utilities/keys.dart';
 import 'package:chatmate/Views/SplashScreen.dart';
 import 'package:chatmate/notificationService/localNotificationService.dart';
@@ -13,6 +14,12 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   print('background handler = ${message.data.toString()}');
   print('background handler title = ${message.notification!.title}');
   LocalNotificationService.createAndDisplayNotificationChannel(message);
+  print('background handler called@@@@@@@@@2');
+  FirebaseServices.setDeliveredStatus(
+      senderId: message.data['senderId'],
+      senderName: message.data['senderName'],
+      receiverId: message.data['receiverId'],
+      receiverName: message.data['receiverName']);
 }
 
 _initializeHive() async {
@@ -23,16 +30,31 @@ _initializeHive() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseApp firebaseApp = await Firebase.initializeApp();
+
   await LocalNotificationService.initialize();
-  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+
+  FirebaseApp firebaseApp = await Firebase.initializeApp().whenComplete(() {
+    print('completee');
+  });
   print('firebase app = ${firebaseApp.name} ${firebaseApp.options.projectId}');
+  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   _initializeHive();
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -38,9 +38,9 @@ class LocalNotificationService {
             ticker: 'ticker');
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
-    await notificationsPlugin.show(
-        id, 'plain title', 'plain body', notificationDetails,
-        payload: 'item x');
+    // await notificationsPlugin.show(
+    //     id, 'plain title', 'plain body', notificationDetails,
+    //     payload: 'item x');
   }
 
   static void createAndDisplayNotificationChannel(
@@ -74,11 +74,13 @@ class LocalNotificationService {
     required String senderId,
     required String receiverId,
     required String receiverName,
+    required String senderName,
   }) async {
     final data = {
       'click_action': 'FLUTTER_NOTIFICATION_CLICK',
       'id': '1',
       'senderId': senderId,
+      'senderName':senderName,
       'receiverId': receiverId,
       'receiverName': receiverName,
       'message': message

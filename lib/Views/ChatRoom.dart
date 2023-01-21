@@ -149,6 +149,7 @@ class _ChatRoomState extends State<ChatRoom> {
         text,
         widget.receiver.fcmToken,
         FirebaseServices.currentUser!.photoURL!,
+        senderName: FirebaseServices.currentUser!.displayName!,
         receiverId: widget.receiver.uid,
         receiverName: widget.receiver.name,
         senderId: FirebaseServices.currentUser!.uid);

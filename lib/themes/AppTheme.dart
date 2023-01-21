@@ -2,6 +2,9 @@ import 'package:chatmate/themes/AppColors.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  AppTheme._private();
+  static final instance = AppTheme._private();
+  factory AppTheme() => instance;
   ThemeData loadTheme(bool useLightTheme) {
     if (useLightTheme) {
       return lightTheme;

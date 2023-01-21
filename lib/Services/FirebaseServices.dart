@@ -6,6 +6,7 @@ import 'package:chatmate/Utilities/utils.dart';
 import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -72,26 +73,29 @@ class FirebaseServices {
         .orderBy('timestamp')
         .snapshots();
     setDeliveredStatus(
-        senderId: senderId, receiverId: receiverId, receiverName: receiverName);
+        senderId: senderId,
+        senderName: currentUser!.displayName!,
+        receiverId: receiverId,
+        receiverName: receiverName);
     return x;
   }
 
   static setDeliveredStatus(
       {required String senderId,
+      required String senderName,
       required String receiverId,
       required String receiverName}) async {
-    print('setting = ${receiverName + receiverId}');
-    print('${currentUser!.displayName!} + ${senderId}');
-    QuerySnapshot query = await _firestore
+    print('${senderName} + ${senderId}=====>${receiverName + receiverId}');
+    // print('');
+    await Firebase.initializeApp();
+    QuerySnapshot query = await FirebaseFirestore.instance
         .collection(CollectionKeys.messages)
-        .doc(receiverName + receiverId)
-        .collection(currentUser!.displayName! + senderId)
+        .doc(senderName + senderId)
+        .collection(receiverName + receiverId)
         .where('status', isEqualTo: describeEnum(MessageStatus.sent))
         .get();
-    // print('query.docs = ${query.docs.length}');
-    // print('query.docs = ${query.docs.first}');
+    print('setDeliveredStatus query.docs = ${query.docs.length}');
     query.docs.forEach((doc) async {
-      print('updating = ${Message.fromMap(doc).toString()}');
       await doc.reference
           .update({'status': describeEnum(MessageStatus.delivered)});
     });
@@ -137,6 +141,7 @@ class FirebaseServices {
     print('listening');
     setDeliveredStatus(
         senderId: currentUser!.uid,
+        senderName: currentUser!.displayName!,
         receiverId: receiverId,
         receiverName: receiverName);
     return _firestore
