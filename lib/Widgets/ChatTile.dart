@@ -38,31 +38,30 @@ class ViewLayout extends StatelessWidget {
         Navigator.pushNamed(context, '/chatroom', arguments: arguments);
       },
       child: Container(
-        margin: EdgeInsets.only(left: 0, right: 0, top: 8, bottom: 8),
+        margin: EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0),
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
-            color: ThemeColors.white,
-            boxShadow: [
-              BoxShadow(
-                  blurRadius: 0.4,
-                  offset: Offset(1, 2),
-                  color: AppColors.bgGrey)
-            ],
-            gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              colors: [
-                ThemeColors.receiverColor,
-                ThemeColors.receiverColor.withOpacity(0.2),
-              ],
-            )
-            // borderRadius: BorderRadius.only(
-            //   bottomLeft: Radius.circular(32),
-            //   bottomRight: Radius.circular(32),
-            //   // topLeft: Radius.circular(12),
-            //   // topRight: Radius.circular(12),
-            // )
-            ),
+          color: AppColors.transparent,
+          // boxShadow: [
+          //   BoxShadow(
+          //       blurRadius: 0.4, offset: Offset(1, 2), color: AppColors.bgGrey)
+          // ],
+          // gradient: LinearGradient(
+          //   begin: Alignment.topRight,
+          //   end: Alignment.topCenter,
+          //   colors: [
+          //     ThemeColors.gradient1.withOpacity(0.3),
+          //     // ThemeColors.gradient2,
+          //     ThemeColors.gradient1,
+          //   ],
+          // )
+          // borderRadius: BorderRadius.only(
+          //   bottomLeft: Radius.circular(32),
+          //   bottomRight: Radius.circular(32),
+          //   // topLeft: Radius.circular(12),
+          //   // topRight: Radius.circular(12),
+          // )
+        ),
         child: Row(
           children: [
             Flexible(

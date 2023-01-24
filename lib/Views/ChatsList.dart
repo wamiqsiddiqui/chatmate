@@ -17,9 +17,9 @@ class _ChatsListState extends State<ChatsList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 8),
+      // margin: EdgeInsets.only(top: 8),
       decoration: BoxDecoration(
-        color: ThemeColors.white,
+        color: ThemeColors.secondaryColor,
         // borderRadius: BorderRadius.only(
         //     topLeft: Radius.circular(32), topRight: Radius.circular(32))
       ),
@@ -35,7 +35,7 @@ class _ChatsListState extends State<ChatsList> {
               }
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: ListView.separated(
+                child: ListView.builder(
                   itemCount: docList.length,
                   itemBuilder: (context, index) {
                     print('docList[index].data = ${docList[index].data()}');
@@ -43,9 +43,6 @@ class _ChatsListState extends State<ChatsList> {
                     return ChatTile(
                       contact: contact,
                     );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return const Divider();
                   },
                 ),
               );

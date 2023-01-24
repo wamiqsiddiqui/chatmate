@@ -25,7 +25,9 @@ class FirebaseServices {
       CAUser fieldValue = CAUser.fromJson(doc);
       print('field = ${fieldValue.fcmToken}');
       Box box = Hive.box(BoxKeys.token);
-      if (fieldValue.fcmToken != box.get(CacheKeys.fcmToken)!) {
+      // print('box.keys = ${box.keys}');
+      // print('box.get(CacheKeys.fcmToken) = ${box.get(CacheKeys.fcmToken)}');
+      if (fieldValue.fcmToken != box.get(CacheKeys.fcmToken)) {
         print("Logged in else where so loggin out here");
         signOut(removeFcmToken: false);
         return false;

@@ -14,7 +14,7 @@ class UserCircle extends StatelessWidget {
       },
       child: CircleAvatar(
         // radius: 24,
-        backgroundColor: ThemeColors.receiverColor,
+        backgroundColor: Color.fromARGB(255, 146, 161, 165),
         child: Stack(
           children: [
             Align(

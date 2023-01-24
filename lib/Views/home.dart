@@ -50,7 +50,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         /*text: 'Contacts',*/ icon:
             Icon(Icons.contacts_rounded, color: AppColors.white))
   ];
-  @override 
+  @override
   void initState() {
     super.initState();
     tabBarCtrl = TabController(length: 4, vsync: this, initialIndex: 1);
@@ -120,16 +120,16 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             initialIndex: 2,
             child: Scaffold(
               bottomNavigationBar: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topRight,
-                      end: Alignment.bottomLeft,
-                      colors: [
-                        Colors.blue,
-                        ThemeColors.primaryColor,
-                      ],
-                    ),
-                  ),
+                  decoration: BoxDecoration(color: ThemeColors.primaryColor
+                      // gradient: LinearGradient(
+                      //   begin: Alignment.topRight,
+                      //   end: Alignment.bottomLeft,
+                      //   colors: [
+                      //     ThemeColors.gradient1,
+                      //     ThemeColors.gradient1,
+                      //   ],
+                      // ),
+                      ),
                   child: TabBar(
                       controller: tabBarCtrl,
                       indicatorColor: ThemeColors.receiverColor,
@@ -145,20 +145,20 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       child: Container(
                         decoration: BoxDecoration(
                             color: ThemeColors.primaryColor,
-                            gradient: LinearGradient(
-                              begin: Alignment.topRight,
-                              end: Alignment.bottomLeft,
-                              colors: [
-                                ThemeColors.primaryColor,
-                                Colors.blue.shade600,
-                              ],
-                            ),
+                            // gradient: LinearGradient(
+                            //   begin: Alignment.topRight,
+                            //   end: Alignment.bottomLeft,
+                            //   colors: [
+                            //     ThemeColors.gradient1,
+                            //     ThemeColors.gradient1,
+                            //   ],
+                            // ),
                             borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(0),
                                 bottomRight: Radius.circular(0))),
                         child: AppBar(
                           elevation: 0,
-                          centerTitle: true,
+                          centerTitle: false,
                           backgroundColor: AppColors.transparent,
                           title: UserCircle(),
                           actions: [
@@ -190,6 +190,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           searchOnPressed();
                         },
                       ),
+                      centerTitle: false,
                       title: TextField(
                         controller: searchTextEditingController,
                         decoration: InputDecoration(hintText: "Search"),
