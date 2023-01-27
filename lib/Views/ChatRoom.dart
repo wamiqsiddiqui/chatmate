@@ -246,7 +246,7 @@ class _ChatRoomState extends State<ChatRoom> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
                     controller: sendTextCtrl,
                     style: Theme.of(context).textTheme.bodyText1,
                     decoration: InputDecoration(
@@ -258,7 +258,9 @@ class _ChatRoomState extends State<ChatRoom> {
                         prefixIcon: Icon(Icons.camera_alt)),
                   ),
                 ),
+                SizedBox(width: 4),
                 FloatingActionButton(
+                    backgroundColor: ThemeColors.primaryColor,
                     child: Icon(Icons.send_rounded),
                     onPressed: () async {
                       await sendMessage(sendTextCtrl.text);
