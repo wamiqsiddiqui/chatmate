@@ -17,10 +17,10 @@ class CallHelper {
           receiverId: caUserTo.uid,
           receiverName: caUserTo.name,
           receiverPic: caUserTo.profilePhoto!,
-          channelId:
-              caUserFrom.uid + caUserTo.uid + Random().nextInt(1000).toString(),
+          channelId: 'chatmate',
+          // caUserFrom.uid + caUserTo.uid + Random().nextInt(1000).toString(),
           hasDialed: true);
-      await callMethods.makeCall(call);
+      call = (await callMethods.makeCall(call))!;
       return call;
     } catch (e) {
       print('Error while dialing = $e');

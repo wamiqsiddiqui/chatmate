@@ -55,6 +55,7 @@ dependencies:
   hive_flutter: ^1.1.0
   path_provider: ^2.0.11
   flutter_notification_channel: ^2.0.0
+  agora_rtc_engine: ^6.1.0
 
 dev_dependencies:
   flutter_test:

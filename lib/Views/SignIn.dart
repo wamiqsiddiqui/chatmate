@@ -53,11 +53,11 @@ class _SignInState extends State<SignIn> {
         print('after');
         if (user != null) {
           FirebaseServices.currentUser = user;
-          bool isNewUser = await FirebaseServices.authenticateUser(user);
+          bool isNewUser = await FirebaseServices.isUserRegistered(user);
           print('lll');
           if (isNewUser) {
             print('new user = ${user.email}');
-            await FirebaseServices.addUserToDb(user);
+            await FirebaseServices.registerUser(user);
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (BuildContext context) => Home()));
           } else {

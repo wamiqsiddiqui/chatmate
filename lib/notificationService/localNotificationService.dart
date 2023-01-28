@@ -38,9 +38,9 @@ class LocalNotificationService {
             ticker: 'ticker');
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
-    await notificationsPlugin.show(
-        id, 'plain title', 'plain body', notificationDetails,
-        payload: 'item x');
+    // await notificationsPlugin.show(
+    //     id, 'plain title', 'plain body', notificationDetails,
+    //     payload: 'item x');
   }
 
   static void createAndDisplayNotificationChannel(
@@ -67,18 +67,26 @@ class LocalNotificationService {
   }
 
   static sendMessageNotification(
-      String title, String message, String fcmToken, String image) async {
+    String title,
+    String message,
+    String fcmToken,
+    String image, {
+    required String senderId,
+    required String receiverId,
+    required String receiverName,
+    required String senderName,
+  }) async {
     final data = {
       'click_action': 'FLUTTER_NOTIFICATION_CLICK',
       'id': '1',
-      'status': 'done',
+      'senderId': senderId,
+      'senderName':senderName,
+      'receiverId': receiverId,
+      'receiverName': receiverName,
       'message': message
     };
 
     try {
-      // await Hive.initFlutter('${appDir.path}/cache');
-      // Box box = await Hive.openBox('tokenBox');
-      // String fcmToken = box.get('fcmToken');
       http.Response response = await http.post(
           Uri.parse('https://fcm.googleapis.com/fcm/send'),
           headers: <String, String>{

@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:badges/badges.dart';
 
 class UserCircle extends StatelessWidget {
-  const UserCircle({Key? key}) : super(key: key);
+  final String? userProfile;
+  const UserCircle({Key? key, this.userProfile}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,17 +14,18 @@ class UserCircle extends StatelessWidget {
         FirebaseServices.signOut();
       },
       child: CircleAvatar(
-        // radius: 24,
-        backgroundColor: ThemeColors.receiverColor,
+        backgroundColor: Color.fromARGB(255, 146, 161, 165),
         child: Stack(
           children: [
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                'MW',
-                style: TextStyle(color: AppColors.white),
-              ),
-            ),
+            userProfile != null
+                ? ClipRRect(child: Image.network(userProfile!))
+                : Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'MW',
+                      style: TextStyle(color: AppColors.white),
+                    ),
+                  ),
             Align(
                 alignment: Alignment.bottomRight,
                 child: Badge(

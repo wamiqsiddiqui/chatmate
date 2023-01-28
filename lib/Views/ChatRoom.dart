@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Model/call.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
+import 'package:http/http.dart' as http;
 import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:chatmate/Utilities/callHelper.dart';
 import 'package:chatmate/router/arguments.dart';
@@ -37,6 +40,65 @@ class _ChatRoomState extends State<ChatRoom> {
   ScrollController chatScrollCtrl = ScrollController();
   List<bool> chats = [true, false, true, false, false, false, true];
   String errorMessage = '';
+  String? aiGeneratedImageUrl;
+  String translatedResponse = 'Not yet';
+  generateApiImage() async {
+    try {
+      var url = Uri.parse('https://api.openai.com/v1/images/generations');
+      var apiToken = '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';
+      print('listening..');
+      var request = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $apiToken'
+          },
+          body: jsonEncode({'prompt': sendTextCtrl.text, 'n': 1}));
+
+      if (request.statusCode == 200) {
+        print('response = 200');
+        aiGeneratedImageUrl = jsonDecode(request.body)['data'][0]['url'];
+        setState(() {});
+      } else {
+        print('NOT 200 - ${jsonDecode(request.body)}');
+      }
+    } catch (e) {
+      print('Exception e = $e');
+    }
+  }
+
+  translateResponse(String toTranslate) async {
+    try {
+      var url = Uri.parse('https://api.openai.com/v1/completions');
+      var apiToken = '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';
+      print('listening..');
+      var request = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $apiToken'
+          },
+          body: jsonEncode({
+            'prompt':
+                "Please translate '$toTranslate' in urdu written in english",
+            "model": "text-davinci-003",
+            "temperature": 0.7,
+            "max_tokens": 256,
+            "top_p": 1,
+            "frequency_penalty": 0,
+            "presence_penalty": 0
+          }));
+
+      if (request.statusCode == 200) {
+        print('response = 200 = ${request.body}');
+        translatedResponse = jsonDecode(request.body)['choices'][0]['text'];
+        setState(() {});
+      } else {
+        print('NOT 200 - ${jsonDecode(request.body)}');
+      }
+    } catch (e) {
+      print('Exception e = $e');
+    }
+  }
+
   Widget receiverChat(DocumentSnapshot snapshot) {
     return UnconstrainedBox(
       alignment: Alignment.centerLeft,
@@ -44,28 +106,38 @@ class _ChatRoomState extends State<ChatRoom> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            margin: EdgeInsets.only(top: 20, bottom: 4, left: 12),
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.65),
-            decoration: BoxDecoration(
-                color: ThemeColors.receiverColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                  bottomRight: Radius.circular(16),
-                )),
-            child: Padding(
-              padding: EdgeInsets.all(12),
-              child: Text(
-                snapshot['text'],
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: AppColors.white,
-                  fontSize: 16,
+          Row(
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: 20, bottom: 4, left: 12),
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.65),
+                decoration: BoxDecoration(
+                    color: ThemeColors.receiverColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                      bottomRight: Radius.circular(16),
+                    )),
+                child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Text(
+                    snapshot['text'],
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
-            ),
+              IconButton(
+                  onPressed: () {
+                    translateResponse(snapshot['text']);
+                  },
+                  icon: Icon(Icons.info)),
+              Text(translatedResponse)
+            ],
           ),
           Padding(
             padding: const EdgeInsets.only(left: 12.0),
@@ -95,28 +167,38 @@ class _ChatRoomState extends State<ChatRoom> {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            margin: EdgeInsets.only(top: 20, bottom: 4, right: 12),
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.65),
-            decoration: BoxDecoration(
-                color: ThemeColors.senderColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                  bottomLeft: Radius.circular(16),
-                )),
-            child: Padding(
-              padding: EdgeInsets.all(12),
-              child: Text(
-                snapshot['text'] + 'hasPendingWrites = $hasPendingWrites',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: AppColors.white,
-                  fontSize: 16,
+          Row(
+            children: [
+              IconButton(
+                  onPressed: () {
+                    translateResponse(snapshot['text']);
+                  },
+                  icon: Icon(Icons.info)),
+              Text(translatedResponse),
+              Container(
+                margin: EdgeInsets.only(top: 20, bottom: 4, right: 12),
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.65),
+                decoration: BoxDecoration(
+                    color: ThemeColors.senderColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                      bottomLeft: Radius.circular(16),
+                    )),
+                child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Text(
+                    snapshot['text'],
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
@@ -125,8 +207,9 @@ class _ChatRoomState extends State<ChatRoom> {
               width: MediaQuery.of(context).size.width * 0.4,
               child: Text(
                 DateFormat('hh:mm a')
-                    .format(snapshot['timestamp'].toDate())
-                    .toString(),
+                        .format(snapshot['timestamp'].toDate())
+                        .toString() +
+                    " ${snapshot['status']}",
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   fontSize: 14,
@@ -140,13 +223,36 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   sendMessage(String text) async {
+    if (sendTextCtrl.text.trim().isEmpty) return;
+    sendTextCtrl.clear();
+    setState(() {});
     await FirebaseServices.sendMessage(
         text, widget.receiver.uid, widget.receiver.name);
     LocalNotificationService.sendMessageNotification(
         'New Message from ${FirebaseServices.currentUser!.displayName!}',
         text,
         widget.receiver.fcmToken,
-        FirebaseServices.currentUser!.photoURL!);
+        FirebaseServices.currentUser!.photoURL!,
+        senderName: FirebaseServices.currentUser!.displayName!,
+        receiverId: widget.receiver.uid,
+        receiverName: widget.receiver.name,
+        senderId: FirebaseServices.currentUser!.uid);
+  }
+
+  dial() async {
+    debugPrint('dial = ${FirebaseServices.currentUser!.uid}');
+    Call call = await CallHelper.dial(
+        FirebaseServices.currentUser!, widget.receiver, context);
+    print('dial in Chatroom.dart');
+    print('call.hasDialed = ${call.hasDialed}');
+    print('callerName = ${call.callerName}');
+    print('receiverName = ${call.receiverName}');
+    print('hasDialed = ${call.hasDialed}');
+    print('channelId = ${call.channelId}');
+    CallScreenArguments arguments =
+        CallScreenArguments(call: call, hasDialed: true);
+    Navigator.pushNamed(context, '/callScreen', arguments: arguments);
+    errorMessage = '';
   }
 
   @override
@@ -177,13 +283,9 @@ class _ChatRoomState extends State<ChatRoom> {
               icon: Icon(Icons.video_call_rounded),
               onPressed: () async {
                 try {
-                  Call call = await CallHelper.dial(
-                      FirebaseServices.currentUser!, widget.receiver, context);
-                  CallScreenArguments arguments =
-                      CallScreenArguments(call: call);
-                  Navigator.pushNamed(context, '/callScreen',
-                      arguments: arguments);
-                  errorMessage = '';
+                  // await Permissions.cameraAndMicrophonePermissionsGranted()
+                  dial();
+                  // : {};
                 } catch (e) {
                   errorMessage = 'Something went wrong please try again!';
                   print('Error while getting call object = $e');
@@ -228,7 +330,7 @@ class _ChatRoomState extends State<ChatRoom> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
                     controller: sendTextCtrl,
                     style: Theme.of(context).textTheme.bodyText1,
                     decoration: InputDecoration(
@@ -240,7 +342,9 @@ class _ChatRoomState extends State<ChatRoom> {
                         prefixIcon: Icon(Icons.camera_alt)),
                   ),
                 ),
+                SizedBox(width: 4),
                 FloatingActionButton(
+                    backgroundColor: ThemeColors.primaryColor,
                     child: Icon(Icons.send_rounded),
                     onPressed: () async {
                       await sendMessage(sendTextCtrl.text);

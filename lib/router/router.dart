@@ -23,6 +23,8 @@ class MainRouter {
       case '/callScreen':
         CallScreenArguments arguments =
             settings.arguments as CallScreenArguments;
+        print(
+            '!!!!!!!!!!!!!!!!!!!!!!!!!!!!arguments.call  = ${arguments.call.hasDialed}');
         return MaterialPageRoute(
             builder: (_) => CallScreen(call: arguments.call));
       default:

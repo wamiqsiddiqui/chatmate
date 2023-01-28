@@ -2,6 +2,9 @@ import 'package:chatmate/themes/AppColors.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  AppTheme._private();
+  static final instance = AppTheme._private();
+  factory AppTheme() => instance;
   ThemeData loadTheme(bool useLightTheme) {
     if (useLightTheme) {
       return lightTheme;
@@ -34,25 +37,25 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         labelStyle: TextStyle(
           fontWeight: FontWeight.bold,
-          color: ThemeColors.secondaryColor,
+          color: ThemeColors.primaryColor,
         ),
         hintStyle: TextStyle(color: Colors.white54),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide(
-            color: ThemeColors.secondaryColor,
+            color: ThemeColors.primaryColor,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide(
-            color: ThemeColors.secondaryColor,
+            color: ThemeColors.primaryColor,
           ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide(
-            color: ThemeColors.secondaryColor,
+            color: AppColors.errorColor,
           ),
         ),
         disabledBorder: OutlineInputBorder(
@@ -64,7 +67,7 @@ class AppTheme {
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide(
-            color: ThemeColors.secondaryColor,
+            color: AppColors.errorColor,
           ),
         ),
       ));

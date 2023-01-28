@@ -5,7 +5,7 @@ import 'package:chatmate/themes/AppColors.dart';
 import 'package:flutter/material.dart';
 
 class Search extends StatefulWidget {
-  List<CAUser> searchResult;
+  final List<CAUser> searchResult;
   Search({required this.searchResult});
   @override
   _SearchState createState() => _SearchState();
@@ -36,7 +36,8 @@ class _SearchState extends State<Search> {
               child: Row(
                 children: [
                   Flexible(
-                    child: UserCircle(),
+                    child: UserCircle(
+                        userProfile: widget.searchResult[index].profilePhoto),
                   ),
                   Expanded(
                     flex: 8,

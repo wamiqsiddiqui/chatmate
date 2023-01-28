@@ -8,5 +8,6 @@ class ChatRoomArguments {
 
 class CallScreenArguments {
   Call call;
-  CallScreenArguments({required this.call});
+  bool hasDialed;
+  CallScreenArguments({required this.call, this.hasDialed = false});
 }

@@ -53,7 +53,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    tabBarCtrl = TabController(length: 4, vsync: this);
+    tabBarCtrl = TabController(length: 4, vsync: this, initialIndex: 1);
 
     // 1. This method call when app in terminated state and you get a notification
     // when you click on notification app open from terminated state and you can get notification data in this method
@@ -64,16 +64,26 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       if (message != null) {
         print('NEw Notification');
         LocalNotificationService.createAndDisplayNotificationChannel(message);
+        FirebaseServices.setDeliveredStatus(
+            senderId: message.data['senderId'],
+            senderName: message.data['senderName'],
+            receiverId: message.data['receiverId'],
+            receiverName: message.data['receiverName']);
       }
     });
 
     FirebaseMessaging.onMessage.listen((message) {
-      print('FirebaseMEssaging.onMessage.listen');
       if (message.notification != null) {
-        print('message.notification!.title = ${message.notification!.title}');
-        print('message.notification!.body = ${message.notification!.body}');
-        print('message.data = ${message.data}');
         LocalNotificationService.createAndDisplayNotificationChannel(message);
+        // FirebaseServices.setDeliveredStatus(
+        //     senderId: message.data['senderId'],
+        //     receiverId: message.data['receiverId'],
+        //     receiverName: message.data['receiverName']);
+        FirebaseServices.setDeliveredStatus(
+            senderId: message.data['senderId'],
+            senderName: message.data['senderName'],
+            receiverId: message.data['receiverId'],
+            receiverName: message.data['receiverName']);
       }
     });
 
@@ -84,6 +94,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         print('message.notification!.body = ${message.notification!.body}');
         print("message.data = ${message.data['_id']}");
         LocalNotificationService.createAndDisplayNotificationChannel(message);
+        FirebaseServices.setDeliveredStatus(
+            senderId: message.data['senderId'],
+            senderName: message.data['senderName'],
+            receiverId: message.data['receiverId'],
+            receiverName: message.data['receiverName']);
       }
     });
     print('getting user');
@@ -100,22 +115,21 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return SafeArea(
       child: PickupLayout(
-        scaffold: DefaultTabController(
+        scaffoldChild: DefaultTabController(
             length: 4,
             initialIndex: 2,
             child: Scaffold(
-              // backgroundColor: ThemeColors.primaryColor,
               bottomNavigationBar: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topRight,
-                      end: Alignment.bottomLeft,
-                      colors: [
-                        Colors.blue,
-                        ThemeColors.primaryColor,
-                      ],
-                    ),
-                  ),
+                  decoration: BoxDecoration(color: ThemeColors.primaryColor
+                      // gradient: LinearGradient(
+                      //   begin: Alignment.topRight,
+                      //   end: Alignment.bottomLeft,
+                      //   colors: [
+                      //     ThemeColors.gradient1,
+                      //     ThemeColors.gradient1,
+                      //   ],
+                      // ),
+                      ),
                   child: TabBar(
                       controller: tabBarCtrl,
                       indicatorColor: ThemeColors.receiverColor,
@@ -131,20 +145,20 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       child: Container(
                         decoration: BoxDecoration(
                             color: ThemeColors.primaryColor,
-                            gradient: LinearGradient(
-                              begin: Alignment.topRight,
-                              end: Alignment.bottomLeft,
-                              colors: [
-                                ThemeColors.primaryColor,
-                                Colors.blue.shade600,
-                              ],
-                            ),
+                            // gradient: LinearGradient(
+                            //   begin: Alignment.topRight,
+                            //   end: Alignment.bottomLeft,
+                            //   colors: [
+                            //     ThemeColors.gradient1,
+                            //     ThemeColors.gradient1,
+                            //   ],
+                            // ),
                             borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(0),
                                 bottomRight: Radius.circular(0))),
                         child: AppBar(
                           elevation: 0,
-                          centerTitle: true,
+                          centerTitle: false,
                           backgroundColor: AppColors.transparent,
                           title: UserCircle(),
                           actions: [
@@ -176,6 +190,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           searchOnPressed();
                         },
                       ),
+                      centerTitle: false,
                       title: TextField(
                         controller: searchTextEditingController,
                         decoration: InputDecoration(hintText: "Search"),
