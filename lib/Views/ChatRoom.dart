@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Model/call.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
-import 'package:chatmate/Utilities/permissions.dart';
+import 'package:http/http.dart' as http;
 import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:chatmate/Utilities/callHelper.dart';
 import 'package:chatmate/router/arguments.dart';
@@ -38,6 +40,65 @@ class _ChatRoomState extends State<ChatRoom> {
   ScrollController chatScrollCtrl = ScrollController();
   List<bool> chats = [true, false, true, false, false, false, true];
   String errorMessage = '';
+  String? aiGeneratedImageUrl;
+  String translatedResponse = 'Not yet';
+  generateApiImage() async {
+    try {
+      var url = Uri.parse('https://api.openai.com/v1/images/generations');
+      var apiToken = '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';
+      print('listening..');
+      var request = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $apiToken'
+          },
+          body: jsonEncode({'prompt': sendTextCtrl.text, 'n': 1}));
+
+      if (request.statusCode == 200) {
+        print('response = 200');
+        aiGeneratedImageUrl = jsonDecode(request.body)['data'][0]['url'];
+        setState(() {});
+      } else {
+        print('NOT 200 - ${jsonDecode(request.body)}');
+      }
+    } catch (e) {
+      print('Exception e = $e');
+    }
+  }
+
+  translateResponse(String toTranslate) async {
+    try {
+      var url = Uri.parse('https://api.openai.com/v1/completions');
+      var apiToken = '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';
+      print('listening..');
+      var request = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $apiToken'
+          },
+          body: jsonEncode({
+            'prompt':
+                "Please translate '$toTranslate' in urdu written in english",
+            "model": "text-davinci-003",
+            "temperature": 0.7,
+            "max_tokens": 256,
+            "top_p": 1,
+            "frequency_penalty": 0,
+            "presence_penalty": 0
+          }));
+
+      if (request.statusCode == 200) {
+        print('response = 200 = ${request.body}');
+        translatedResponse = jsonDecode(request.body)['choices'][0]['text'];
+        setState(() {});
+      } else {
+        print('NOT 200 - ${jsonDecode(request.body)}');
+      }
+    } catch (e) {
+      print('Exception e = $e');
+    }
+  }
+
   Widget receiverChat(DocumentSnapshot snapshot) {
     return UnconstrainedBox(
       alignment: Alignment.centerLeft,
@@ -45,28 +106,38 @@ class _ChatRoomState extends State<ChatRoom> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            margin: EdgeInsets.only(top: 20, bottom: 4, left: 12),
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.65),
-            decoration: BoxDecoration(
-                color: ThemeColors.receiverColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                  bottomRight: Radius.circular(16),
-                )),
-            child: Padding(
-              padding: EdgeInsets.all(12),
-              child: Text(
-                snapshot['text'],
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: AppColors.white,
-                  fontSize: 16,
+          Row(
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: 20, bottom: 4, left: 12),
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.65),
+                decoration: BoxDecoration(
+                    color: ThemeColors.receiverColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                      bottomRight: Radius.circular(16),
+                    )),
+                child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Text(
+                    snapshot['text'],
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
-            ),
+              IconButton(
+                  onPressed: () {
+                    translateResponse(snapshot['text']);
+                  },
+                  icon: Icon(Icons.info)),
+              Text(translatedResponse)
+            ],
           ),
           Padding(
             padding: const EdgeInsets.only(left: 12.0),
@@ -96,28 +167,38 @@ class _ChatRoomState extends State<ChatRoom> {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            margin: EdgeInsets.only(top: 20, bottom: 4, right: 12),
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.65),
-            decoration: BoxDecoration(
-                color: ThemeColors.senderColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                  bottomLeft: Radius.circular(16),
-                )),
-            child: Padding(
-              padding: EdgeInsets.all(12),
-              child: Text(
-                snapshot['text'],
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: AppColors.white,
-                  fontSize: 16,
+          Row(
+            children: [
+              IconButton(
+                  onPressed: () {
+                    translateResponse(snapshot['text']);
+                  },
+                  icon: Icon(Icons.info)),
+              Text(translatedResponse),
+              Container(
+                margin: EdgeInsets.only(top: 20, bottom: 4, right: 12),
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.65),
+                decoration: BoxDecoration(
+                    color: ThemeColors.senderColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                      bottomLeft: Radius.circular(16),
+                    )),
+                child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Text(
+                    snapshot['text'],
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
