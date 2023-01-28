@@ -36,7 +36,8 @@ class _SearchState extends State<Search> {
               child: Row(
                 children: [
                   Flexible(
-                    child: UserCircle(),
+                    child: UserCircle(
+                        userProfile: widget.searchResult[index].profilePhoto),
                   ),
                   Expanded(
                     flex: 8,

@@ -223,6 +223,9 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   sendMessage(String text) async {
+    if (sendTextCtrl.text.trim().isEmpty) return;
+    sendTextCtrl.clear();
+    setState(() {});
     await FirebaseServices.sendMessage(
         text, widget.receiver.uid, widget.receiver.name);
     LocalNotificationService.sendMessageNotification(

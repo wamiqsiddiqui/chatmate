@@ -42,39 +42,12 @@ class ViewLayout extends StatelessWidget {
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: AppColors.transparent,
-          // boxShadow: [
-          //   BoxShadow(
-          //       blurRadius: 0.4, offset: Offset(1, 2), color: AppColors.bgGrey)
-          // ],
-          // gradient: LinearGradient(
-          //   begin: Alignment.topRight,
-          //   end: Alignment.topCenter,
-          //   colors: [
-          //     ThemeColors.gradient1.withOpacity(0.3),
-          //     // ThemeColors.gradient2,
-          //     ThemeColors.gradient1,
-          //   ],
-          // )
-          // borderRadius: BorderRadius.only(
-          //   bottomLeft: Radius.circular(32),
-          //   bottomRight: Radius.circular(32),
-          //   // topLeft: Radius.circular(12),
-          //   // topRight: Radius.circular(12),
-          // )
         ),
         child: Row(
           children: [
             Flexible(
-              child: UserCircle(),
+              child: UserCircle(userProfile: contactUser.profilePhoto),
             ),
-            // Container(
-            //   height: 32,
-            //   width: 32,
-            //   decoration: BoxDecoration(
-            //       color: ThemeColors.primaryColor,
-            //       borderRadius:
-            //           BorderRadius.only(bottomLeft: Radius.circular(82))),
-            // ),
             Expanded(
               flex: 8,
               child: Padding(
