@@ -18,7 +18,10 @@ class UserCircle extends StatelessWidget {
         child: Stack(
           children: [
             userProfile != null
-                ? ClipRRect(child: Image.network(userProfile!))
+                ? ClipRRect(
+                    clipBehavior: Clip.hardEdge,
+                    borderRadius: BorderRadius.circular(32),
+                    child: Image.network(userProfile!))
                 : Align(
                     alignment: Alignment.center,
                     child: Text(

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Model/call.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
+import 'package:chatmate/Widgets/UserCircle.dart';
 import 'package:http/http.dart' as http;
 import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:chatmate/Utilities/callHelper.dart';
@@ -28,9 +29,6 @@ class _ChatRoomState extends State<ChatRoom> {
     FirebaseMessaging.onMessage.listen((message) {
       print('FirebaseMEssaging.onMessage.listen');
       if (message.notification != null) {
-        print('message.notification!.title = ${message.notification!.title}');
-        print('message.notification!.body = ${message.notification!.body}');
-        print('message.data = ${message.data}');
         LocalNotificationService.createAndDisplayNotificationChannel(message);
       }
     });
@@ -243,12 +241,6 @@ class _ChatRoomState extends State<ChatRoom> {
     debugPrint('dial = ${FirebaseServices.currentUser!.uid}');
     Call call = await CallHelper.dial(
         FirebaseServices.currentUser!, widget.receiver, context);
-    print('dial in Chatroom.dart');
-    print('call.hasDialed = ${call.hasDialed}');
-    print('callerName = ${call.callerName}');
-    print('receiverName = ${call.receiverName}');
-    print('hasDialed = ${call.hasDialed}');
-    print('channelId = ${call.channelId}');
     CallScreenArguments arguments =
         CallScreenArguments(call: call, hasDialed: true);
     Navigator.pushNamed(context, '/callScreen', arguments: arguments);
@@ -259,10 +251,9 @@ class _ChatRoomState extends State<ChatRoom> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // centerTitle: true,
         title: Row(
           children: [
-            // UserCircle(),
+            UserCircle(userProfile: widget.receiver.profilePhoto),
             SizedBox(width: 8),
             Text(widget.receiver.name),
           ],
@@ -308,7 +299,6 @@ class _ChatRoomState extends State<ChatRoom> {
                   widget.receiver.uid, widget.receiver.name),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
-                print('rebuild ${snapshot.data!.metadata.hasPendingWrites}');
                 if (snapshot.data == null) {
                   return Text('Getting messages');
                 }
