@@ -4,6 +4,7 @@ import 'package:chatmate/Model/Users.dart';
 import 'package:chatmate/Model/call.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
 import 'package:chatmate/Widgets/UserCircle.dart';
+import 'package:chatmate/Widgets/animatedDialog.dart';
 import 'package:http/http.dart' as http;
 import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:chatmate/Utilities/callHelper.dart';
@@ -247,6 +248,8 @@ class _ChatRoomState extends State<ChatRoom> {
     errorMessage = '';
   }
 
+  openAttachments() {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -292,56 +295,71 @@ class _ChatRoomState extends State<ChatRoom> {
           },
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          StreamBuilder(
-              stream: FirebaseServices.receiveMessage(
-                  widget.receiver.uid, widget.receiver.name),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.data == null) {
-                  return Text('Getting messages');
-                }
-                return Flexible(
-                    child: ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        controller: chatScrollCtrl,
-                        reverse: true,
-                        itemBuilder: (context, index) {
-                          return snapshot.data!.docs[index]['senderId'] ==
-                                  FirebaseServices.currentUser!.uid
-                              ? senderChat(snapshot.data!.docs[index],
-                                  snapshot.data!.metadata.hasPendingWrites)
-                              : receiverChat(snapshot.data!.docs[index]);
-                        }));
-              }),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: sendTextCtrl,
-                    style: Theme.of(context).textTheme.bodyText1,
-                    decoration: InputDecoration(
-                        labelText: 'Type your message',
-                        suffixIcon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [Icon(Icons.attachment), Icon(Icons.face)],
-                        ),
-                        prefixIcon: Icon(Icons.camera_alt)),
-                  ),
+          Align(
+            alignment: Alignment.center,
+            child: AnimatedDialog(),
+          ),
+          Column(
+            children: [
+              StreamBuilder(
+                  stream: FirebaseServices.receiveMessage(
+                      widget.receiver.uid, widget.receiver.name),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.data == null) {
+                      return Text('Getting messages');
+                    }
+                    return Flexible(
+                        child: ListView.builder(
+                            itemCount: snapshot.data!.docs.length,
+                            controller: chatScrollCtrl,
+                            reverse: true,
+                            itemBuilder: (context, index) {
+                              return snapshot.data!.docs[index]['senderId'] ==
+                                      FirebaseServices.currentUser!.uid
+                                  ? senderChat(snapshot.data!.docs[index],
+                                      snapshot.data!.metadata.hasPendingWrites)
+                                  : receiverChat(snapshot.data!.docs[index]);
+                            }));
+                  }),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: sendTextCtrl,
+                        style: Theme.of(context).textTheme.bodyText1,
+                        decoration: InputDecoration(
+                            labelText: 'Type your message',
+                            suffixIcon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      openAttachments();
+                                    },
+                                    icon: Icon(Icons.attachment)),
+                                Icon(Icons.face)
+                              ],
+                            ),
+                            prefixIcon: Icon(Icons.camera_alt)),
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    FloatingActionButton(
+                        backgroundColor: ThemeColors.primaryColor,
+                        child: Icon(Icons.send_rounded),
+                        onPressed: () async {
+                          await sendMessage(sendTextCtrl.text);
+                        })
+                  ],
                 ),
-                SizedBox(width: 4),
-                FloatingActionButton(
-                    backgroundColor: ThemeColors.primaryColor,
-                    child: Icon(Icons.send_rounded),
-                    onPressed: () async {
-                      await sendMessage(sendTextCtrl.text);
-                    })
-              ],
-            ),
-          )
+              )
+            ],
+          ),
         ],
       ),
     );
