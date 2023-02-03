@@ -1,7 +1,6 @@
 import 'package:chatmate/Services/FirebaseServices.dart';
 import 'package:chatmate/themes/AppColors.dart';
 import 'package:flutter/material.dart';
-import 'package:badges/badges.dart';
 
 class UserCircle extends StatelessWidget {
   final String? userProfile;
@@ -32,8 +31,7 @@ class UserCircle extends StatelessWidget {
             Align(
                 alignment: Alignment.bottomRight,
                 child: Badge(
-                  borderRadius: BorderRadius.circular(12),
-                  badgeColor: AppColors.successGreenColor,
+                  backgroundColor: AppColors.successGreenColor,
                 ))
           ],
         ),

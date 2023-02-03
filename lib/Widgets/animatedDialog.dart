@@ -1,3 +1,4 @@
+import 'package:chatmate/Widgets/shareLocation.dart';
 import 'package:chatmate/themes/AppColors.dart';
 import 'package:flutter/material.dart';
 
@@ -20,9 +21,14 @@ class _AnimatedDialogState extends State<AnimatedDialog> {
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Wrap(children: [
-          CircleAvatar(
-            backgroundColor: AppColors.successGreenColor,
-            child: Icon(Icons.location_on),
+          InkWell(
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: ((BuildContext context) => ShareLocation())));
+            },
+            child: CircleAvatar(
+              backgroundColor: AppColors.successGreenColor,
+              child: Icon(Icons.location_on),
+            ),
           ),
           CircleAvatar(
             backgroundColor: AppColors.errorColor,

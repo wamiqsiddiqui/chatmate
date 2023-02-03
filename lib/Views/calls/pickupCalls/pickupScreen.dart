@@ -46,7 +46,8 @@ class PickupScreen extends StatelessWidget {
                   icon: Icon(Icons.call),
                   color: AppColors.successGreenColor,
                   onPressed: () async {
-                    await Permissions.cameraAndMicrophonePermissionsGranted()
+                    await PermissionsHelper
+                            .cameraAndMicrophonePermissionsGranted()
                         ? pickupCall(context)
                         : {};
                   },

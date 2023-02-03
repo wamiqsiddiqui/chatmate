@@ -56,6 +56,9 @@ dependencies:
   path_provider: ^2.0.11
   flutter_notification_channel: ^2.0.0
   agora_rtc_engine: ^6.1.0
+  google_maps_flutter: ^2.2.3
+  geolocator: ^9.0.2
+  android_intent: ^2.0.2
 
 dev_dependencies:
   flutter_test:

@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import 'package:android_intent/android_intent.dart';
 import 'package:flutter/services.dart';
 
-class Permissions {
+class PermissionsHelper {
   static Future<bool> cameraAndMicrophonePermissionsGranted() async {
     PermissionStatus cameraPermissionStatus = await _getCameraPermission();
     PermissionStatus microphonePermissionStatus =
@@ -27,6 +29,45 @@ class Permissions {
     } else {
       return permission;
     }
+  }
+
+  static Future<PermissionStatus> requestPermisison(
+      Permission permission) async {
+    try {
+      final PermissionStatus status = await permission.request();
+      return status;
+    } catch (e) {
+      return PermissionStatus.denied;
+    }
+  }
+
+  static Future<bool> isPermissionGranted(Permission permission) async {
+    return permission.isGranted;
+  }
+
+  static Future checkGps(context) async {
+    if (!(await Geolocator.isLocationServiceEnabled())) {
+      if (Theme.of(context).platform == TargetPlatform.android) {
+        showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) => Column(
+                  children: [
+                    Text('Please enable  GPS and try again!'),
+                    const SizedBox(height: 8),
+                    ElevatedButton(
+                        onPressed: () => onConfirm(context),
+                        child: Text('Okay'))
+                  ],
+                ));
+      }
+    }
+  }
+
+  static onConfirm(context) {
+    AndroidIntent intent =
+        AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTONGS');
+    intent.launch();
+    Navigator.of(context, rootNavigator: true).pop();
   }
 
   static Future<PermissionStatus> _getMicrophonePermission() async {
