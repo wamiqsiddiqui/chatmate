@@ -80,7 +80,7 @@ class LocalNotificationService {
       'click_action': 'FLUTTER_NOTIFICATION_CLICK',
       'id': '1',
       'senderId': senderId,
-      'senderName':senderName,
+      'senderName': senderName,
       'receiverId': receiverId,
       'receiverName': receiverName,
       'message': message

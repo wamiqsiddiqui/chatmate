@@ -1,8 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wamiq.chatmate">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permisison.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
    <application
         android:label="chatmate"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+                   android:value="AIzaSyB7cvQyueRyRcaPnO7CymDrfSTGbD-svis"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

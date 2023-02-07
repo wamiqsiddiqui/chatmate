@@ -16,19 +16,21 @@ class _AnimatedDialogState extends State<AnimatedDialog> {
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
       decoration: BoxDecoration(
-          color: AppColors.bgGrey ,
+          color: AppColors.bgGrey,
           borderRadius: BorderRadius.circular(animatedRadius)),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Wrap(children: [
-          InkWell(
-            onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: ((BuildContext context) => ShareLocation())));
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              print('pressed');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: ((BuildContext context) => ShareLocation())));
             },
-            child: CircleAvatar(
-              backgroundColor: AppColors.successGreenColor,
-              child: Icon(Icons.location_on),
-            ),
+            child: Icon(Icons.location_on),
           ),
           CircleAvatar(
             backgroundColor: AppColors.errorColor,

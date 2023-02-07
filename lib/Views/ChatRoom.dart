@@ -5,6 +5,7 @@ import 'package:chatmate/Model/call.dart';
 import 'package:chatmate/Services/FirebaseServices.dart';
 import 'package:chatmate/Widgets/UserCircle.dart';
 import 'package:chatmate/Widgets/animatedDialog.dart';
+import 'package:chatmate/Widgets/shareLocation.dart';
 import 'package:http/http.dart' as http;
 import 'package:chatmate/notificationService/localNotificationService.dart';
 import 'package:chatmate/Utilities/callHelper.dart';
@@ -296,11 +297,13 @@ class _ChatRoomState extends State<ChatRoom> {
         ),
       ),
       body: Stack(
+        alignment: Alignment.centerLeft,
         children: [
-          Align(
-            alignment: Alignment.center,
-            child: AnimatedDialog(),
-          ),
+          ElevatedButton(
+              onPressed: () {
+                print('on pressed');
+              },
+              child: Text('eieijeijeijceicjec')),
           Column(
             children: [
               StreamBuilder(
@@ -360,6 +363,7 @@ class _ChatRoomState extends State<ChatRoom> {
               )
             ],
           ),
+          AnimatedDialog(),
         ],
       ),
     );

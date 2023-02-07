@@ -34,33 +34,38 @@ class PermissionsHelper {
   static Future<PermissionStatus> requestPermisison(
       Permission permission) async {
     try {
+      if (await _isPermissionGranted(permission)) return permission.status;
       final PermissionStatus status = await permission.request();
       return status;
     } catch (e) {
+      print('denied? = $e');
       return PermissionStatus.denied;
     }
   }
 
-  static Future<bool> isPermissionGranted(Permission permission) async {
-    return permission.isGranted;
+  static Future<bool> _isPermissionGranted(Permission permission) async {
+    bool s = await permission.isGranted;
+
+    print('permission.isGranted = $s');
+
+    return s;
   }
 
-  static Future checkGps(context) async {
-    if (!(await Geolocator.isLocationServiceEnabled())) {
-      if (Theme.of(context).platform == TargetPlatform.android) {
-        showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) => Column(
-                  children: [
-                    Text('Please enable  GPS and try again!'),
-                    const SizedBox(height: 8),
-                    ElevatedButton(
-                        onPressed: () => onConfirm(context),
-                        child: Text('Okay'))
-                  ],
-                ));
-      }
+  static Future<bool> checkGps(context) async {
+    if (await Geolocator.isLocationServiceEnabled()) return true;
+    if (Theme.of(context).platform == TargetPlatform.android) {
+      showModalBottomSheet(
+          context: context,
+          builder: (BuildContext context) => Column(
+                children: [
+                  Text('Please enable  GPS and try again!'),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                      onPressed: () => onConfirm(context), child: Text('Okay'))
+                ],
+              ));
     }
+    return false;
   }
 
   static onConfirm(context) {
